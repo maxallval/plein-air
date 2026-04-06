@@ -1,1 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Camping Cost Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <div class="p-6 max-w-3xl mx-auto space-y-6">
+    <h1 class="text-2xl font-bold">Camping Cost Calculator</h1>
 
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label>People</label>
+        <input id="people" type="number" value="2" class="border p-2 w-full" />
+      </div>
+
+      <div>
+        <label>Nights</label>
+        <input id="nights" type="number" value="2" class="border p-2 w-full" />
+      </div>
+
+      <div>
+        <label>Dogs</label>
+        <input id="dogs" type="number" value="0" class="border p-2 w-full" />
+      </div>
+
+      <div>
+        <label>Campground</label>
+        <select id="campground" class="border p-2 w-full"></select>
+      </div>
+    </div>
+
+    <div id="result" class="bg-gray-100 p-4 rounded-xl space-y-2"></div>
+  </div>
+
+  <script>
+    const data = [
+      { id: 1, name: "Camping du Lac", pricePerNight: 35, accessFee: 8, reservationFee: 10, dogAllowed: true, extraPerson: 5, maxPeople: 6 },
+      { id: 2, name: "Parc Nature", pricePerNight: 45, accessFee: 10, reservationFee: 12, dogAllowed: false, extraPerson: 7, maxPeople: 4 }
+    ];
+
+    const campgroundSelect = document.getElementById('campground');
+    const resultDiv = document.getElementById('result');
+
+    data.forEach(c => {
+      const option = document.createElement('option');
+      option.value = c.id;
+      option.textContent = c.name;
+      campgroundSelect.appendChild(option);
+    });
+
+    function calculate() {
+      const people = Number(document.getElementById('people').value);
+      const nights = Number(document.getElementById('nights').value);
+      const dogs = Number(document.getElementById('dogs').value);
+      const selected = data.find(c => c.id === Number(campgroundSelect.value));
+
+      if (!selected) return;
+
+      let base = selected.pricePerNight * nights;
+      let access = selected.accessFee * people * nights;
+      let reservation = selected.reservationFee;
+
+      let extraPeople = Math.max(0, people - 2) * selected.extraPerson * nights;
+      let dogCost = dogs * 5 * nights;
+
+      let subtotal = base + access + reservation + extraPeople + dogCost;
+      let taxes = subtotal * 0.14975;
+      let total = subtotal + taxes;
+
+      resultDiv.innerHTML = `
+        <div><strong>Total:</strong> $${total.toFixed(2)}</div>
+        <div><strong>Per person:</strong> $${(total/people).toFixed(2)}</div>
+        <div><strong>Per night:</strong> $${(total/nights).toFixed(2)}</div>
+        <hr />
+        <div>Base: $${base.toFixed(2)}</div>
+        <div>Access: $${access.toFixed(2)}</div>
+        <div>Reservation: $${reservation.toFixed(2)}</div>
+        <div>Extra people: $${extraPeople.toFixed(2)}</div>
+        <div>Dogs: $${dogCost.toFixed(2)}</div>
+        <div>Taxes: $${taxes.toFixed(2)}</div>
+      `;
+    }
+
+    document.querySelectorAll('input, select').forEach(el => {
+      el.addEventListener('input', calculate);
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
