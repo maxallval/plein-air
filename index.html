@@ -475,7 +475,161 @@
             font-size: clamp(1.3rem, 4vw, 1.8rem);
             font-weight: 700;
         }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 1rem;
+        }
+
+        .modal-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #000;
+        }
+
+        .modal-form-group input,
+        .modal-form-group select,
+        .modal-form-group textarea {
+            padding: 0.7rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: #ffffff;
+            color: #000;
+        }
+
+        .modal-form-group input:focus,
+        .modal-form-group select:focus,
+        .modal-form-group textarea:focus {
+            outline: none;
+            border-color: #000;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.7rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #000;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #222;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #000;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+        }
+
+        .btn-danger {
+            background: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #ffcdd2;
+        }
+
+        .btn-danger:hover {
+            background: #ffcdd2;
+        }
+
+        .btn-small {
+            padding: 0.5rem 0.85rem;
+            font-size: 0.75rem;
+        }
+
+        .campground-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 0.85rem;
+            border: 1px solid #e0e0e0;
+            background: #f9f9f9;
+            color: #000;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #f0f0f0;
+            border-color: #000;
+        }
+
+        .action-btn.delete {
+            background: #ffebee;
+            border-color: #ffcdd2;
+            color: #d32f2f;
+        }
+
+        .action-btn.delete:hover {
+            background: #ffcdd2;
+        }
     </style>
+
 </head>
 <body>
     <div id="root"></div>
@@ -638,6 +792,41 @@
             const [selectedCampground, setSelectedCampground] = useState(null);
             const [accommodationType, setAccommodationType] = useState('');
             const [extras, setExtras] = useState([]);
+            const [editingCampground, setEditingCampground] = useState(null);
+            const [showModal, setShowModal] = useState(false);
+
+            const saveCampgrounds = (updated) => {
+                setCampgrounds(updated);
+                localStorage.setItem('campgrounds', JSON.stringify(updated));
+            };
+
+            const deleteCampground = (id) => {
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce camping?')) {
+                    const updated = campgrounds.filter(c => c.id !== id);
+                    saveCampgrounds(updated);
+                    if (selectedCampground?.id === id) {
+                        setSelectedCampground(null);
+                    }
+                }
+            };
+
+            const openEditModal = (campground) => {
+                setEditingCampground(JSON.parse(JSON.stringify(campground)));
+                setShowModal(true);
+            };
+
+            const saveEditedCampground = () => {
+                if (!editingCampground?.name) {
+                    alert('Le nom est obligatoire');
+                    return;
+                }
+                const updated = campgrounds.map(c => c.id === editingCampground.id ? editingCampground : c);
+                saveCampgrounds(updated);
+                setShowModal(false);
+                setEditingCampground(null);
+            };
+
+            const isDefaultCampground = (camp) => camp.id === 1 || camp.id === 2;
 
             useEffect(() => {
                 if (campgrounds.length > 0 && !selectedCampground) {
@@ -819,6 +1008,12 @@
                                         <div key={camp.id} className="campground-item">
                                             <h4>{camp.name}</h4>
                                             <p>{camp.region}</p>
+                                            {!isDefaultCampground(camp) && (
+                                                <div className="campground-actions">
+                                                    <button className="action-btn" onClick={() => openEditModal(camp)}>Éditer</button>
+                                                    <button className="action-btn delete" onClick={() => deleteCampground(camp.id)}>Supprimer</button>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -833,6 +1028,33 @@
                                             <div className="stat-label">Régions</div>
                                             <div className="stat-value">{new Set(campgrounds.map(c => c.region)).size}</div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {showModal && editingCampground && (
+                            <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                                <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                    <h2>Éditer camping</h2>
+                                    <div className="modal-form-group">
+                                        <label>Nom</label>
+                                        <input type="text" value={editingCampground.name} onChange={(e) => setEditingCampground({...editingCampground, name: e.target.value})} />
+                                    </div>
+                                    <div className="modal-form-group">
+                                        <label>Région</label>
+                                        <input type="text" value={editingCampground.region} onChange={(e) => setEditingCampground({...editingCampground, region: e.target.value})} />
+                                    </div>
+                                    <div className="modal-form-group">
+                                        <label>Frais d'accès par personne</label>
+                                        <input type="number" step="0.01" value={editingCampground.accessFee || editingCampground.accessFeeAdult || 0} onChange={(e) => {
+                                            const val = parseFloat(e.target.value);
+                                            setEditingCampground({...editingCampground, accessFee: val, accessFeeAdult: val});
+                                        }} />
+                                    </div>
+                                    <div className="modal-actions">
+                                        <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Annuler</button>
+                                        <button className="btn btn-primary" onClick={saveEditedCampground}>Sauvegarder</button>
                                     </div>
                                 </div>
                             </div>
