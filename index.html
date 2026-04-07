@@ -1155,7 +1155,7 @@
             );
         }
 
-        function SummaryBar({ startDate, endDate, numAdults, numChildren, selectedCampground }) {
+        function SummaryBar({ startDate, endDate, numAdults, numChildren, selectedCampground, result }) {
             const nights = calculateNights(startDate, endDate);
             const hasDates = startDate && endDate;
             const hasCamp = !!selectedCampground;
@@ -1177,8 +1177,10 @@
                             <span className={`step-label ${hasCamp ? 'completed' : 'pending'}`}>{hasCamp ? selectedCampground.name : 'Camping'}</span>
                         </div>
                         <div className="step-item">
-                            <div className={`step-circle ${hasDates && hasPers && hasCamp ? 'completed' : 'pending'}`}>{hasDates && hasPers && hasCamp ? '✓' : ''}</div>
-                            <span className={`step-label ${hasDates && hasPers && hasCamp ? 'completed' : 'pending'}`}>Total</span>
+                            <div className={`step-circle ${hasDates && hasPers && hasCamp && result.total > 0 ? 'completed' : 'pending'}`}>{hasDates && hasPers && hasCamp && result.total > 0 ? '✓' : ''}</div>
+                            <span className={`step-label ${hasDates && hasPers && hasCamp && result.total > 0 ? 'completed' : 'pending'}`}>
+                                {hasDates && hasPers && hasCamp && result.total > 0 ? formatCAD(result.total) : 'Total'}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -1187,7 +1189,6 @@
 
         // ==================== APP ====================
         function App() {
-            const [activeTab, setActiveTab] = useState('calculator');
             const [campgrounds] = useState(CAMPGROUNDS);
             const [startDate, setStartDate] = useState('');
             const [endDate, setEndDate] = useState('');
@@ -1270,19 +1271,7 @@
                         <p>Calculateur de camping au Québec</p>
                     </div>
 
-                    <div className="tabs">
-                        <button className={`tab-btn ${activeTab === 'calculator' ? 'active' : ''}`} onClick={() => setActiveTab('calculator')}>Calculateur</button>
-                        <button className={`tab-btn ${activeTab === 'admin' ? 'active' : ''}`} onClick={() => setActiveTab('admin')}>Gestion</button>
-                        <button className="reset-btn" onClick={handleReset}>↺ Réinitialiser</button>
-                    </div>
-
-                    {activeTab === 'calculator' && <SummaryBar startDate={startDate} endDate={endDate} numAdults={numAdults} numChildren={numChildren} selectedCampground={selectedCampground} />}
-
-                    {activeTab === 'calculator' && (
-                        <div>
-                            <CalendarSection startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} numAdults={numAdults} setNumAdults={setNumAdults} numChildren={numChildren} setNumChildren={setNumChildren} />
-
-                            <div className="campgrounds-section">
+                    {/* Tabs supprimés */}
                                 <div className="campgrounds-grid">
                                     {sortedCampgrounds.map(c => (
                                         <div key={c.id} className={`campground-card ${selectedCampground?.id === c.id ? 'selected' : ''}`} onClick={() => handleCampgroundChange(c)}>
@@ -1328,91 +1317,120 @@
                                                                         <button className="qty-btn" onClick={() => setExtras(extras.map(e => e.id === ex.id ? { ...e, quantity: e.quantity + 1 } : e))}>+</button>
                                                                     </div>
                                                                 </div>
-                                                            );
-                                                        })}
-                                                    </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Summary Bar et contenu principal */}
+                    <SummaryBar startDate={startDate} endDate={endDate} numAdults={numAdults} numChildren={numChildren} selectedCampground={selectedCampground} result={result} />
+
+                    <CalendarSection startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} numAdults={numAdults} setNumAdults={setNumAdults} numChildren={numChildren} setNumChildren={setNumChildren} />
+
+                    <div className="campgrounds-section">
+                        <div style={{textAlign: 'center', marginBottom: '1.5rem'}}>
+                            <button className="reset-btn" onClick={handleReset} style={{background: '#f0f0f0'}}>↺ Réinitialiser</button>
+                        </div>
+                        
+                        <div className="campgrounds-grid">
+                            {sortedCampgrounds.map(c => (
+                                <div key={c.id} className={`campground-card ${selectedCampground?.id === c.id ? 'selected' : ''}`} onClick={() => handleCampgroundChange(c)}>
+                                    <div className="campground-title">
+                                        {c.favicon && <img src={c.favicon} alt="" />}
+                                        <h4>{c.name}</h4>
+                                    </div>
+                                    <p className="campground-region">{c.region}</p>
+                                    <div className="campground-price">{formatCAD(getBasePrice(c))}</div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {selectedCampground && (
+                            <div className="content-grid">
+                                <div>
+                                    <div className="form-group">
+                                        <label>Hébergement</label>
+                                        <select className="input-select" value={accommodationType} onChange={(e) => setAccommodationType(e.target.value)}>
+                                            {Object.entries(selectedCampground.accommodationTypes).map(([k, t]) => (
+                                                <option key={k} value={k}>{t.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {selectedCampground.extras.length > 0 && (
+                                        <div className="form-group">
+                                            <label>Extras</label>
+                                            <div className="extras-list">
+                                                {selectedCampground.extras.map(ex => {
+                                                    if (selectedCampground.id === 4 && (ex.id === 201 || ex.id === 202)) return null;
+                                                    const state = extras.find(e => e.id === ex.id) || { quantity: 0 };
+                                                    const days = ex.billedPer === 'jour' ? calculateNights(startDate, endDate) + 1 : 1;
+                                                    return (
+                                                        <div key={ex.id} className="extra-item">
+                                                            <div className="extra-info">
+                                                                <div className="extra-name">{ex.name}</div>
+                                                                <div className="extra-price">{formatCAD(ex.price)}/{ex.billedPer === 'jour' ? `jour (${days}j)` : 'séjour'}</div>
+                                                            </div>
+                                                            <div className="qty-control">
+                                                                <button className="qty-btn" onClick={() => setExtras(extras.map(e => e.id === ex.id ? { ...e, quantity: Math.max(0, e.quantity - 1) } : e))}>−</button>
+                                                                <span className="qty-display">{state.quantity}</span>
+                                                                <button className="qty-btn" onClick={() => setExtras(extras.map(e => e.id === ex.id ? { ...e, quantity: e.quantity + 1 } : e))}>+</button>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="results-box">
+                                    <div className="result-title">{selectedCampground.name}</div>
+                                    <div className="result-label">Total</div>
+                                    {result.error ? (
+                                        <div className="error">{result.error}</div>
+                                    ) : result.total > 0 ? (
+                                        <>
+                                            <div className="price-display">{formatCAD(result.total)}</div>
+                                            <div className="breakdown-row">
+                                                <span className="breakdown-label">Hébergement ({result.breakdown.nuits}n)</span>
+                                                <span className="breakdown-value">{formatCAD(result.breakdown.hebergement)}</span>
+                                            </div>
+                                            {result.breakdown.acces > 0 && (
+                                                <div className="breakdown-row">
+                                                    <span className="breakdown-label">{selectedCampground.id === 1 ? 'Conservation' : 'Accès'}</span>
+                                                    <span className="breakdown-value">{formatCAD(result.breakdown.acces)}</span>
                                                 </div>
                                             )}
-                                        </div>
-
-                                        <div className="results-box">
-                                            <div className="result-title">{selectedCampground.name}</div>
-                                            <div className="result-label">Total</div>
-                                            {result.error ? (
-                                                <div className="error">{result.error}</div>
-                                            ) : result.total > 0 ? (
-                                                <>
-                                                    <div className="price-display">{formatCAD(result.total)}</div>
-                                                    <div className="breakdown-row">
-                                                        <span className="breakdown-label">Hébergement ({result.breakdown.nuits}n)</span>
-                                                        <span className="breakdown-value">{formatCAD(result.breakdown.hebergement)}</span>
-                                                    </div>
-                                                    {result.breakdown.acces > 0 && (
-                                                        <div className="breakdown-row">
-                                                            <span className="breakdown-label">{selectedCampground.id === 1 ? 'Conservation' : 'Accès'}</span>
-                                                            <span className="breakdown-value">{formatCAD(result.breakdown.acces)}</span>
-                                                        </div>
-                                                    )}
-                                                    {result.breakdown.extras > 0 && (
-                                                        <div className="breakdown-row">
-                                                            <span className="breakdown-label">Extras</span>
-                                                            <span className="breakdown-value">{formatCAD(result.breakdown.extras)}</span>
-                                                        </div>
-                                                    )}
-                                                    <div className="breakdown-row">
-                                                        <span className="breakdown-label">Taxes (15%)</span>
-                                                        <span className="breakdown-value">{formatCAD(result.breakdown.taxes)}</span>
-                                                    </div>
-                                                    <div className="sub-info">
-                                                        <div className="sub-info-item">
-                                                            <div className="sub-info-label">Par pers</div>
-                                                            <div className="sub-info-value">{formatCAD(result.totalPerPerson)}</div>
-                                                        </div>
-                                                        <div className="sub-info-item">
-                                                            <div className="sub-info-label">Par nuit</div>
-                                                            <div className="sub-info-value">{formatCAD(result.totalPerNight)}</div>
-                                                        </div>
-                                                    </div>
-                                                    <button className="share-btn" onClick={handleShare}>📤 Partager / Copier</button>
-                                                </>
-                                            ) : (
-                                                <div className="info-text">Remplissez les champs pour calculer</div>
+                                            {result.breakdown.extras > 0 && (
+                                                <div className="breakdown-row">
+                                                    <span className="breakdown-label">Extras</span>
+                                                    <span className="breakdown-value">{formatCAD(result.breakdown.extras)}</span>
+                                                </div>
                                             )}
-                                        </div>
-                                    </div>
-                                )}
+                                            <div className="breakdown-row">
+                                                <span className="breakdown-label">Taxes (15%)</span>
+                                                <span className="breakdown-value">{formatCAD(result.breakdown.taxes)}</span>
+                                            </div>
+                                            <div className="sub-info">
+                                                <div className="sub-info-item">
+                                                    <div className="sub-info-label">Par pers</div>
+                                                    <div className="sub-info-value">{formatCAD(result.totalPerPerson)}</div>
+                                                </div>
+                                                <div className="sub-info-item">
+                                                    <div className="sub-info-label">Par nuit</div>
+                                                    <div className="sub-info-value">{formatCAD(result.totalPerNight)}</div>
+                                                </div>
+                                            </div>
+                                            <button className="share-btn" onClick={handleShare}>📤 Partager / Copier</button>
+                                        </>
+                                    ) : (
+                                        <div className="info-text">Remplissez les champs pour calculer</div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
-                    {activeTab === 'admin' && (
-                        <div className="admin-section">
-                            <div className="admin-grid">
-                                <div className="card">
-                                    <h3>Campings</h3>
-                                    {campgrounds.map(c => (
-                                        <div key={c.id} className="campground-item">
-                                            <h4>{c.favicon && <img src={c.favicon} alt="" />} {c.name}</h4>
-                                            <p>{c.region}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="card">
-                                    <h3>Statistiques</h3>
-                                    <div className="stats-grid">
-                                        <div className="stat-card">
-                                            <div className="stat-label">Campings</div>
-                                            <div className="stat-value">{campgrounds.length}</div>
-                                        </div>
-                                        <div className="stat-card">
-                                            <div className="stat-label">Régions</div>
-                                            <div className="stat-value">{new Set(campgrounds.map(c => c.region)).size}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
             );
         }
