@@ -851,11 +851,14 @@
             breakdown.hebergement = nightlyRate;
 
             let acces = 0;
-            if (campground.accessFeeAdult !== undefined) {
+            if (campground.id === 4) {
+                // Mont des Morios: accès annuel (10$) par adulte seulement (contributions en extras)
+                acces = (campground.accessFeeAdult || 0) * numAdults;
+            } else if (campground.accessFeeAdult !== undefined) {
                 // SÉPAQ: frais fixes par personne (adulte/enfant)
                 acces = (campground.accessFeeAdult || 0) * numAdults + (campground.accessFeeChild || 0) * numChildren;
             } else {
-                // Parc du Poisson Blanc: 1% du prix de l'hébergement
+                // Parc du Poisson Blanc et Montagne du Diable: 1% du prix de l'hébergement
                 acces = nightlyRate * 0.01;
             }
             breakdown.acces = acces;
@@ -1032,17 +1035,19 @@
                 reservationFee: 0,
                 accommodationTypes: {
                     'camping-sauvage-sommet': {
-                        label: 'Camping sauvage - Sommet (Contribution demandée 5-10$)',
+                        label: 'Camping sauvage - Sommet (Gratuit)',
                         maxCapacity: 20,
                         pricing: {
-                            basse: { weekday: 5.00, weekend: 5.00, minNights: 1, maxNights: 7 },
-                            haute: { weekday: 10.00, weekend: 10.00, minNights: 1, maxNights: 7 }
+                            basse: { weekday: 0.00, weekend: 0.00, minNights: 1, maxNights: 7 },
+                            haute: { weekday: 0.00, weekend: 0.00, minNights: 1, maxNights: 7 }
                         }
                     }
                 },
                 extras: [
-                    { id: 201, name: 'Droit de circulation (ZEC des Martres)', price: 14.25, billedPer: 'séjour' },
-                    { id: 202, name: 'Carte topographique', price: 0.00, billedPer: 'séjour' }
+                    { id: 201, name: 'Contribution basse saison', price: 5.00, billedPer: 'séjour' },
+                    { id: 202, name: 'Contribution haute saison', price: 10.00, billedPer: 'séjour' },
+                    { id: 203, name: 'Droit de circulation (ZEC des Martres)', price: 14.25, billedPer: 'séjour' },
+                    { id: 204, name: 'Carte topographique', price: 0.00, billedPer: 'séjour' }
                 ]
             },
             {
@@ -1100,6 +1105,8 @@
             const [editingCampground, setEditingCampground] = useState(null);
             const [showModal, setShowModal] = useState(false);
             const [modalTab, setModalTab] = useState('info');
+            const [calendarOpen, setCalendarOpen] = useState(false);
+            const [calendarMode, setCalendarMode] = useState('start'); // 'start' ou 'end'
 
             const saveCampgrounds = (updated) => {
                 // setCampgrounds(updated);
@@ -1234,6 +1241,30 @@
                 }
             }, [selectedCampground]);
 
+            // Auto-sélectionner contributions pour Mont des Morios
+            useEffect(() => {
+                if (selectedCampground?.id === 4 && startDate && endDate) {
+                    // Déterminer la saison dominante
+                    let basseNights = 0, hauteNights = 0;
+                    let currentDate = new Date(startDate);
+                    while (currentDate < new Date(endDate)) {
+                        const season = getSeason(currentDate.toISOString().split('T')[0]);
+                        if (season === 'basse') basseNights++;
+                        else hauteNights++;
+                        currentDate.setDate(currentDate.getDate() + 1);
+                    }
+                    
+                    // Ajouter la contribution appropriée
+                    const newExtras = extras.filter(e => e.id !== 201 && e.id !== 202);
+                    if (hauteNights >= basseNights) {
+                        newExtras.push({ id: 202, quantity: 1 }); // Haute saison
+                    } else {
+                        newExtras.push({ id: 201, quantity: 1 }); // Basse saison
+                    }
+                    setExtras(newExtras);
+                }
+            }, [selectedCampground?.id, startDate, endDate]);
+
             const result = calculateCost({ startDate, endDate, numAdults, numChildren, campground: selectedCampground, accommodationType, extras });
 
             const getBasePrice = (camp) => {
@@ -1243,7 +1274,14 @@
                         prices.push(season.weekday || 0);
                     });
                 });
-                return prices.length > 0 ? Math.min(...prices) : 0;
+                const basePrice = prices.length > 0 ? Math.min(...prices) : 0;
+                
+                // Pour Mont des Morios: accès annuel (10$) + contribution min en basse saison (5$)
+                if (camp.id === 4) {
+                    return 10.00 + 5.00; // 15$ minimum
+                }
+                
+                return basePrice;
             };
 
             return (
@@ -1266,12 +1304,22 @@
                         <div style={{padding: '1rem', borderBottom: '1px solid #f0f0f0', background: '#fafafa'}}>
                             <div className="header-inputs">
                                 <div className="header-input-group">
-                                    <label>Arrivée</label>
-                                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                                </div>
-                                <div className="header-input-group">
-                                    <label>Départ</label>
-                                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                                    <label>Dates</label>
+                                    <div style={{display: 'flex', gap: '0.5rem'}}>
+                                        <input 
+                                            type="date" 
+                                            value={startDate} 
+                                            onChange={(e) => setStartDate(e.target.value)}
+                                            style={{flex: 1}}
+                                        />
+                                        <span style={{alignSelf: 'center', fontWeight: '500'}}>→</span>
+                                        <input 
+                                            type="date" 
+                                            value={endDate} 
+                                            onChange={(e) => setEndDate(e.target.value)}
+                                            style={{flex: 1}}
+                                        />
+                                    </div>
                                 </div>
                                 <div className="header-input-group">
                                     <label>Adultes</label>
@@ -1326,6 +1374,11 @@
                                                     <label>Extras</label>
                                                     <div className="extras-list">
                                                         {selectedCampground.extras.map(extra => {
+                                                            // Masquer les contributions auto-sélectionnées pour Mont des Morios
+                                                            if (selectedCampground.id === 4 && (extra.id === 201 || extra.id === 202)) {
+                                                                return null;
+                                                            }
+                                                            
                                                             const extrasState = extras.find(e => e.id === extra.id) || { quantity: 0 };
                                                             const daysOfUse = extra.billedPer === 'jour' 
                                                                 ? calculateNights(startDate, endDate) + 1
@@ -1355,6 +1408,11 @@
 
                                 <div>
                                     <div className="results-box">
+                                        {selectedCampground && (
+                                            <div style={{fontSize: '1.3rem', fontWeight: '600', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '2px solid #f0f0f0', color: '#000'}}>
+                                                {selectedCampground.name}
+                                            </div>
+                                        )}
                                         <div className="result-label">Total</div>
                                         {result.error ? (
                                             <div className="error">{result.error}</div>
@@ -1390,6 +1448,47 @@
                                                         <div className="sub-info-label">Par nuit</div>
                                                         <div className="sub-info-value">{formatCAD(result.totalPerNight)}</div>
                                                     </div>
+                                                </div>
+                                                <div style={{marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #f0f0f0'}}>
+                                                    <button 
+                                                        onClick={() => {
+                                                            const text = `${selectedCampground.name}\n\n` +
+                                                                `Dates: ${startDate} au ${endDate}\n` +
+                                                                `Personnes: ${numAdults} adultes, ${numChildren} enfants\n` +
+                                                                `Hébergement: ${accommodationType}\n\n` +
+                                                                `Coûts:\n` +
+                                                                `Hébergement: ${formatCAD(result.breakdown.hebergement)}\n` +
+                                                                `Frais d'accès: ${formatCAD(result.breakdown.acces)}\n` +
+                                                                `Extras: ${formatCAD(result.breakdown.extras)}\n` +
+                                                                `Taxes: ${formatCAD(result.breakdown.taxes)}\n\n` +
+                                                                `TOTAL: ${formatCAD(result.total)}\n` +
+                                                                `Par personne: ${formatCAD(result.totalPerPerson)}\n` +
+                                                                `Par nuit: ${formatCAD(result.totalPerNight)}`;
+                                                            
+                                                            if (navigator.share) {
+                                                                navigator.share({ title: 'CampCalc - ' + selectedCampground.name, text: text });
+                                                            } else {
+                                                                navigator.clipboard.writeText(text);
+                                                                alert('Tableau copié au presse-papiers!');
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '100%',
+                                                            padding: '0.75rem',
+                                                            background: '#000',
+                                                            color: '#fff',
+                                                            border: 'none',
+                                                            borderRadius: '6px',
+                                                            fontSize: '0.95rem',
+                                                            fontWeight: '500',
+                                                            cursor: 'pointer',
+                                                            transition: 'opacity 0.2s'
+                                                        }}
+                                                        onMouseOver={(e) => e.target.style.opacity = '0.8'}
+                                                        onMouseOut={(e) => e.target.style.opacity = '1'}
+                                                    >
+                                                        📤 Partager / Copier
+                                                    </button>
                                                 </div>
                                             </>
                                         ) : (
