@@ -1050,17 +1050,18 @@
         function App() {
             const [activeTab, setActiveTab] = useState('calculator');
             const [campgrounds, setCampgrounds] = useState(() => {
-                const saved = localStorage.getItem('campgrounds');
-                if (saved) {
-                    try {
-                        const parsed = JSON.parse(saved);
-                        if (parsed.length > 1 || parsed[0]?.name === 'Camping Mont-Tremblant') {
-                            localStorage.removeItem('campgrounds');
-                            return DEFAULT_CAMPGROUNDS;
-                        }
-                        return parsed;
-                    } catch { return DEFAULT_CAMPGROUNDS; }
-                }
+                // Lecture localStorage désactivée temporairement
+                // const saved = localStorage.getItem('campgrounds');
+                // if (saved) {
+                //     try {
+                //         const parsed = JSON.parse(saved);
+                //         if (parsed.length > 1 || parsed[0]?.name === 'Camping Mont-Tremblant') {
+                //             localStorage.removeItem('campgrounds');
+                //             return DEFAULT_CAMPGROUNDS;
+                //         }
+                //         return parsed;
+                //     } catch { return DEFAULT_CAMPGROUNDS; }
+                // }
                 return DEFAULT_CAMPGROUNDS;
             });
 
@@ -1076,8 +1077,9 @@
             const [modalTab, setModalTab] = useState('info');
 
             const saveCampgrounds = (updated) => {
-                setCampgrounds(updated);
-                localStorage.setItem('campgrounds', JSON.stringify(updated));
+                // setCampgrounds(updated);
+                // localStorage.setItem('campgrounds', JSON.stringify(updated));
+                // Sauvegarde désactivée temporairement
             };
 
             const deleteCampground = (id) => {
@@ -1378,18 +1380,8 @@
                                 <div className="card">
                                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #f0f0f0'}}>
                                         <h3 style={{margin: 0}}>Campings</h3>
-                                        <button className="btn btn-primary btn-small" onClick={() => {
-                                            setEditingCampground({
-                                                id: Date.now(),
-                                                name: '',
-                                                region: '',
-                                                accessFee: 0,
-                                                reservationFee: 0,
-                                                accommodationTypes: {},
-                                                extras: []
-                                            });
-                                            setShowModal(true);
-                                        }}>+ Ajouter</button>
+                                        {/* Bouton + Ajouter désactivé temporairement */}
+                                        {/* <button className="btn btn-primary btn-small" onClick={() => {...}}>+ Ajouter</button> */}
                                     </div>
                                     {campgrounds.map(camp => (
                                         <div key={camp.id} className="campground-item">
@@ -1398,12 +1390,13 @@
                                                 {camp.name}
                                             </h4>
                                             <p>{camp.region}</p>
-                                            {!isDefaultCampground(camp) && (
+                                            {/* Boutons Éditer/Supprimer désactivés temporairement */}
+                                            {/* {!isDefaultCampground(camp) && (
                                                 <div className="campground-actions">
                                                     <button className="action-btn" onClick={() => openEditModal(camp)}>Éditer</button>
                                                     <button className="action-btn delete" onClick={() => deleteCampground(camp.id)}>Supprimer</button>
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     ))}
                                 </div>
