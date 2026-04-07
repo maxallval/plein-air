@@ -234,6 +234,30 @@
             margin-bottom: 0.2rem;
         }
 
+        .fee-info {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+            font-size: 0.8rem;
+        }
+
+        .fee-label {
+            color: #999;
+        }
+
+        .fee-value {
+            font-weight: 600;
+            color: #000;
+        }
+
         .extras-list {
             display: flex;
             flex-direction: column;
@@ -840,8 +864,11 @@
                 if (extra.quantity > 0) {
                     const extraData = campground.extras.find(e => e.id === extra.id);
                     if (extraData) {
-                        const multiplier = extraData.billedPer === 'jour' ? nights : 1;
-                        extrasTotal += extraData.price * extra.quantity * multiplier;
+                        // Calcul par jour: du 21 au 24 = 4 jours (21, 22, 23, 24)
+                        const daysOfUse = extraData.billedPer === 'jour' 
+                            ? Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24))
+                            : 1;
+                        extrasTotal += extraData.price * extra.quantity * daysOfUse;
                     }
                 }
             });
@@ -1140,6 +1167,27 @@
                                                     <div className="campground-info">
                                                         <h4>{camp.name}</h4>
                                                         <p>{camp.region}</p>
+                                                        <div className="fee-info">
+                                                            {camp.id === 1 ? (
+                                                                <div>
+                                                                    <div className="fee-row">
+                                                                        <span className="fee-label">Frais de conservation:</span>
+                                                                        <span className="fee-value">{formatCAD(camp.accessFee)}/pers</span>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div>
+                                                                    <div className="fee-row">
+                                                                        <span className="fee-label">Adulte:</span>
+                                                                        <span className="fee-value">{formatCAD(camp.accessFeeAdult)}</span>
+                                                                    </div>
+                                                                    <div className="fee-row">
+                                                                        <span className="fee-label">Enfant:</span>
+                                                                        <span className="fee-value">{formatCAD(camp.accessFeeChild)}</span>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                     <div className="campground-card-price">
                                                         <div className="campground-card-price-label">à partir de</div>
@@ -1167,11 +1215,16 @@
                                                     <div className="extras-list">
                                                         {selectedCampground.extras.map(extra => {
                                                             const extrasState = extras.find(e => e.id === extra.id) || { quantity: 0 };
+                                                            const daysOfUse = extra.billedPer === 'jour' 
+                                                                ? Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24))
+                                                                : 1;
                                                             return (
                                                                 <div key={extra.id} className="extra-item">
                                                                     <div className="extra-info">
                                                                         <div className="extra-name">{extra.name}</div>
-                                                                        <div className="extra-price">{formatCAD(extra.price)}/{extra.billedPer === 'jour' ? 'jour' : 'séjour'}</div>
+                                                                        <div className="extra-price">
+                                                                            {formatCAD(extra.price)}/{extra.billedPer === 'jour' ? `jour (${daysOfUse} jours)` : 'séjour'}
+                                                                        </div>
                                                                     </div>
                                                                     <div className="qty-control">
                                                                         <button className="qty-btn" onClick={() => setExtras(extras.map(e => e.id === extra.id ? { ...e, quantity: Math.max(0, e.quantity - 1) } : e))}>−</button>
@@ -1197,12 +1250,12 @@
                                             <>
                                                 <div className="price-display">{formatCAD(result.total)}</div>
                                                 <div className="breakdown-row">
-                                                    <span className="breakdown-label">Hébergement</span>
+                                                    <span className="breakdown-label">Hébergement ({result.breakdown.nuits} nuits)</span>
                                                     <span className="breakdown-value">{formatCAD(result.breakdown.hebergement)}</span>
                                                 </div>
                                                 {result.breakdown.acces > 0 && (
                                                     <div className="breakdown-row">
-                                                        <span className="breakdown-label">Accès</span>
+                                                        <span className="breakdown-label">{selectedCampground.id === 1 ? 'Frais de conservation' : 'Frais d\'accès'}</span>
                                                         <span className="breakdown-value">{formatCAD(result.breakdown.acces)}</span>
                                                     </div>
                                                 )}
@@ -1213,7 +1266,7 @@
                                                     </div>
                                                 )}
                                                 <div className="breakdown-row">
-                                                    <span className="breakdown-label">Taxes</span>
+                                                    <span className="breakdown-label">Taxes (15%)</span>
                                                     <span className="breakdown-value">{formatCAD(result.breakdown.taxes)}</span>
                                                 </div>
                                                 <div className="sub-info">
@@ -1335,7 +1388,7 @@
                                             </div>
 
                                             <div className="modal-form-group">
-                                                <label>Frais d'accès par personne</label>
+                                                <label>Frais de conservation/accès par personne</label>
                                                 <input 
                                                     type="number" 
                                                     step="0.01" 
@@ -1348,6 +1401,9 @@
                                                     placeholder="0.00"
                                                     className={(editingCampground.accessFee < 0 || editingCampground.accessFeeAdult < 0) ? 'form-error' : ''}
                                                 />
+                                                <div style={{fontSize: '0.75rem', color: '#999', marginTop: '0.3rem'}}>
+                                                    Ex: 1.78 pour Parc du Poisson Blanc (frais de conservation)
+                                                </div>
                                             </div>
 
                                             <div className="modal-form-group">
