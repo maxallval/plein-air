@@ -852,9 +852,11 @@
 
             let acces = 0;
             if (campground.accessFeeAdult !== undefined) {
+                // SÉPAQ: frais fixes par personne (adulte/enfant)
                 acces = (campground.accessFeeAdult || 0) * numAdults + (campground.accessFeeChild || 0) * numChildren;
             } else {
-                acces = (campground.accessFee || 0) * totalPersons;
+                // Parc du Poisson Blanc: 1% du prix de l'hébergement
+                acces = nightlyRate * 0.01;
             }
             breakdown.acces = acces;
             breakdown.reservation = campground.reservationFee || 0;
@@ -1172,7 +1174,7 @@
                                                                 <div>
                                                                     <div className="fee-row">
                                                                         <span className="fee-label">Frais de conservation:</span>
-                                                                        <span className="fee-value">{formatCAD(camp.accessFee)}/pers</span>
+                                                                        <span className="fee-value">1% du prix</span>
                                                                     </div>
                                                                 </div>
                                                             ) : (
@@ -1402,7 +1404,7 @@
                                                     className={(editingCampground.accessFee < 0 || editingCampground.accessFeeAdult < 0) ? 'form-error' : ''}
                                                 />
                                                 <div style={{fontSize: '0.75rem', color: '#999', marginTop: '0.3rem'}}>
-                                                    Ex: 1.78 pour Parc du Poisson Blanc (frais de conservation)
+                                                    Laisser 0 pour 1% du prix hébergement (Parc du Poisson Blanc)
                                                 </div>
                                             </div>
 
