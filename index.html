@@ -718,7 +718,8 @@
             // Extras
             let extrasTotal = 0;
             extras.forEach(extra => {
-                if (extra.selected && extra.quantity > 0) {
+                // Si quantity > 0, inclure dans le calcul (peu importe selected)
+                if (extra.quantity > 0) {
                     const extraData = campground.extras.find(e => e.id === extra.id);
                     if (extraData) {
                         const multiplier = extraData.billedPer === 'jour' ? nights : 1;
