@@ -1143,30 +1143,41 @@
                                     const extrasState = extras.find(e => e.id === extra.id) || { selected: false, quantity: 0 };
                                     return (
                                         <div key={extra.id} className="extra-item">
-                                            <label className="checkbox-label">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={extrasState.selected}
-                                                    onChange={(e) => handleExtraChange(extra.id, 'selected', e.target.checked)}
-                                                />
-                                                <span>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div>
                                                     <strong>{extra.name}</strong>
                                                     <br />
                                                     <small style={{ color: 'var(--stone)' }}>
                                                         {formatCAD(extra.price)} par {extra.billedPer === 'jour' ? 'jour' : 'séjour'}
                                                     </small>
-                                                </span>
-                                            </label>
-                                            {extrasState.selected && (
-                                                <input
-                                                    type="number"
-                                                    min="0"
-                                                    placeholder="Quantité"
-                                                    value={extrasState.quantity}
-                                                    onChange={(e) => handleExtraChange(extra.id, 'quantity', parseInt(e.target.value) || 0)}
-                                                    style={{ marginTop: '0.5rem', width: '100%' }}
-                                                />
-                                            )}
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                    <button
+                                                        className="btn btn-secondary btn-small"
+                                                        onClick={() => {
+                                                            if (extrasState.quantity > 0) {
+                                                                handleExtraChange(extra.id, 'quantity', extrasState.quantity - 1);
+                                                            }
+                                                        }}
+                                                        style={{ padding: '0.4rem 0.6rem', fontSize: '18px', minWidth: '32px' }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <span style={{ minWidth: '30px', textAlign: 'center', fontWeight: 'bold' }}>
+                                                        {extrasState.quantity}
+                                                    </span>
+                                                    <button
+                                                        className="btn btn-primary btn-small"
+                                                        onClick={() => {
+                                                            handleExtraChange(extra.id, 'quantity', extrasState.quantity + 1);
+                                                            handleExtraChange(extra.id, 'selected', true);
+                                                        }}
+                                                        style={{ padding: '0.4rem 0.6rem', fontSize: '18px', minWidth: '32px' }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     );
                                 })}
@@ -1295,12 +1306,18 @@
                                         <button
                                             className="btn btn-secondary btn-small"
                                             onClick={() => onEdit(camp)}
+                                            disabled={camp.name === 'Parc du Poisson Blanc'}
+                                            title={camp.name === 'Parc du Poisson Blanc' ? 'Ce camping est pré-configuré' : ''}
+                                            style={camp.name === 'Parc du Poisson Blanc' ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                                         >
                                             Éditer
                                         </button>
                                         <button
                                             className="btn btn-danger btn-small"
                                             onClick={() => onDelete(camp.id)}
+                                            disabled={camp.name === 'Parc du Poisson Blanc'}
+                                            title={camp.name === 'Parc du Poisson Blanc' ? 'Ce camping ne peut pas être supprimé' : ''}
+                                            style={camp.name === 'Parc du Poisson Blanc' ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                                         >
                                             Supprimer
                                         </button>
