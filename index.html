@@ -901,6 +901,7 @@
                 id: 2,
                 name: 'SÉPAQ',
                 region: 'Partout au Québec',
+                favicon: 'https://www.google.com/s2/favicons?sz=32&domain_url=https%3A%2F%2Fwww.sepaq.com%2Fhome%2Findex.dot%3Flanguage_id%3D2',
                 maxCapacity: 8,
                 dogsAllowed: false,
                 accessFeeAdult: 8.78,
@@ -922,6 +923,7 @@
                 id: 1,
                 name: 'Parc du Poisson Blanc',
                 region: 'Outaouais',
+                favicon: 'https://poissonblanc.ca/img/favicon/pb-favicon-32x32.png',
                 maxCapacity: 16,
                 dogsAllowed: true,
                 maxDogs: 2,
@@ -1167,7 +1169,10 @@
                                             {campgrounds.map(camp => (
                                                 <div key={camp.id} className={`campground-card ${selectedCampground?.id === camp.id ? 'selected' : ''}`} onClick={() => setSelectedCampground(camp)}>
                                                     <div className="campground-info">
-                                                        <h4>{camp.name}</h4>
+                                                        <h4 style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                            {camp.favicon && <img src={camp.favicon} alt="" style={{width: '20px', height: '20px', borderRadius: '3px'}} />}
+                                                            {camp.name}
+                                                        </h4>
                                                         <p>{camp.region}</p>
                                                         <div className="fee-info">
                                                             {camp.id === 1 ? (
@@ -1310,7 +1315,10 @@
                                     </div>
                                     {campgrounds.map(camp => (
                                         <div key={camp.id} className="campground-item">
-                                            <h4>{camp.name}</h4>
+                                            <h4 style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                {camp.favicon && <img src={camp.favicon} alt="" style={{width: '20px', height: '20px', borderRadius: '3px'}} />}
+                                                {camp.name}
+                                            </h4>
                                             <p>{camp.region}</p>
                                             {!isDefaultCampground(camp) && (
                                                 <div className="campground-actions">
