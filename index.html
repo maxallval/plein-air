@@ -284,7 +284,7 @@
                                     </>
                                 )}
                                 {showAdults && <div className="number-grid">{Array.from({ length: 16 }, (_, i) => i + 1).map(n => <button key={n} className={`number-btn ${numAdults === n ? 'selected' : ''}`} onClick={() => { onAdultsChange(n); setShowAdults(false); }}>{n}</button>)}</div>}
-                                {showChildren && <div className="number-grid">{Array.from({ length: 16 }, (_, i) => i + 1).map(n => <button key={n} className={`number-btn ${numChildren === n ? 'selected' : ''}`} onClick={() => { onChildrenChange(n); setShowChildren(false); }}>{n}</button>)}</div>}
+                                {showChildren && <div className="number-grid">{Array.from({ length: 17 }, (_, i) => i).map(n => <button key={n} className={`number-btn ${numChildren === n ? 'selected' : ''}`} onClick={() => { onChildrenChange(n); setShowChildren(false); }}>{n === 0 ? 'Aucun' : n}</button>)}</div>}
                             </div>
                         )}
                     </div>
