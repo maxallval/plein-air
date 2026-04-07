@@ -1143,40 +1143,61 @@
                                     const extrasState = extras.find(e => e.id === extra.id) || { selected: false, quantity: 0 };
                                     return (
                                         <div key={extra.id} className="extra-item">
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                                <div style={{ flex: 1 }}>
                                                     <strong>{extra.name}</strong>
                                                     <br />
                                                     <small style={{ color: 'var(--stone)' }}>
                                                         {formatCAD(extra.price)} par {extra.billedPer === 'jour' ? 'jour' : 'séjour'}
                                                     </small>
                                                 </div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                    <button
-                                                        className="btn btn-secondary btn-small"
-                                                        onClick={() => {
-                                                            if (extrasState.quantity > 0) {
-                                                                handleExtraChange(extra.id, 'quantity', extrasState.quantity - 1);
-                                                            }
-                                                        }}
-                                                        style={{ padding: '0.4rem 0.6rem', fontSize: '18px', minWidth: '32px' }}
-                                                    >
-                                                        −
-                                                    </button>
-                                                    <span style={{ minWidth: '30px', textAlign: 'center', fontWeight: 'bold' }}>
-                                                        {extrasState.quantity}
-                                                    </span>
-                                                    <button
-                                                        className="btn btn-primary btn-small"
-                                                        onClick={() => {
-                                                            handleExtraChange(extra.id, 'quantity', extrasState.quantity + 1);
-                                                            handleExtraChange(extra.id, 'selected', true);
-                                                        }}
-                                                        style={{ padding: '0.4rem 0.6rem', fontSize: '18px', minWidth: '32px' }}
-                                                    >
-                                                        +
-                                                    </button>
-                                                </div>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (extrasState.quantity > 0) {
+                                                            handleExtraChange(extra.id, 'quantity', extrasState.quantity - 1);
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        padding: '0.5rem 0.75rem',
+                                                        background: '#7a9b6f',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: extrasState.quantity > 0 ? 'pointer' : 'default',
+                                                        opacity: extrasState.quantity > 0 ? 1 : 0.5,
+                                                        fontSize: '16px',
+                                                        fontWeight: 'bold',
+                                                        minWidth: '40px'
+                                                    }}
+                                                >
+                                                    −
+                                                </button>
+                                                <span style={{ minWidth: '40px', textAlign: 'center', fontWeight: 'bold', fontSize: '18px' }}>
+                                                    {extrasState.quantity}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        handleExtraChange(extra.id, 'quantity', extrasState.quantity + 1);
+                                                        handleExtraChange(extra.id, 'selected', true);
+                                                    }}
+                                                    style={{
+                                                        padding: '0.5rem 0.75rem',
+                                                        background: '#2d5016',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer',
+                                                        fontSize: '16px',
+                                                        fontWeight: 'bold',
+                                                        minWidth: '40px'
+                                                    }}
+                                                >
+                                                    +
+                                                </button>
                                             </div>
                                         </div>
                                     );
@@ -1372,6 +1393,8 @@
         // ==================== MODAL: CAMPGROUND EDITOR ====================
         function CampgroundModal({ campground, onSave, onClose }) {
             const isNew = !campground;
+            const isSpecial = campground?.name === 'Parc du Poisson Blanc';
+            
             const [form, setForm] = useState(campground || {
                 name: '',
                 region: '',
@@ -1379,13 +1402,9 @@
                 dogsAllowed: true,
                 maxDogs: 2,
                 accessFee: 5,
-                reservationFee: 15,
+                reservationFee: 0,
                 types: ['Tente'],
-                pricing: {
-                    basse: { base: 30, weekend: 38 },
-                    moyenne: { base: 45, weekend: 55 },
-                    haute: { base: 55, weekend: 65 }
-                },
+                accommodationTypes: {},
                 extras: []
             });
 
@@ -1393,14 +1412,22 @@
                 setForm({ ...form, [field]: value });
             };
 
-            const handlePricingChange = (season, level, value) => {
+            const handleAccommodationChange = (accKey, season, field, value) => {
                 setForm({
                     ...form,
-                    pricing: {
-                        ...form.pricing,
-                        [season]: {
-                            ...form.pricing[season],
-                            [level]: parseFloat(value) || 0
+                    accommodationTypes: {
+                        ...form.accommodationTypes,
+                        [accKey]: {
+                            ...form.accommodationTypes[accKey],
+                            pricing: {
+                                ...form.accommodationTypes[accKey].pricing,
+                                [season]: {
+                                    ...form.accommodationTypes[accKey].pricing[season],
+                                    [field]: field === 'minNights' || field === 'maxNights' 
+                                        ? parseInt(value) || 0 
+                                        : parseFloat(value) || 0
+                                }
+                            }
                         }
                     }
                 });
@@ -1413,6 +1440,27 @@
                 }
                 onSave(form);
             };
+
+            if (isSpecial) {
+                return (
+                    <div className="modal-overlay" onClick={onClose}>
+                        <div className="modal" onClick={(e) => e.stopPropagation()}>
+                            <h2>⚠️ Camping pré-configuré</h2>
+                            <p style={{ marginBottom: '1rem' }}>
+                                Le <strong>Parc du Poisson Blanc</strong> est un camping pré-configuré avec tarification spéciale par type d'hébergement.
+                            </p>
+                            <p style={{ marginBottom: '1rem', color: 'var(--stone)' }}>
+                                Pour modifier ce camping, vous devez editer le code source ou ajouter un nouveau camping personnalisé.
+                            </p>
+                            <div className="modal-actions">
+                                <button className="btn btn-primary" onClick={onClose}>
+                                    Fermer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
 
             return (
                 <div className="modal-overlay" onClick={onClose}>
@@ -1496,34 +1544,88 @@
                         </div>
 
                         <div className="form-group">
-                            <label>Tarification par saison</label>
-                            {Object.entries(form.pricing).map(([season, prices]) => (
-                                <div key={season} style={{ marginBottom: '1rem', padding: '1rem', background: 'var(--bg)', borderRadius: '4px' }}>
-                                    <h5 style={{ color: 'var(--pine)', marginBottom: '0.5rem', textTransform: 'capitalize' }}>
-                                        {season === 'basse' ? 'Basse saison' : season === 'moyenne' ? 'Moyenne saison' : 'Haute saison'}
-                                    </h5>
-                                    <div className="form-row">
-                                        <div>
-                                            <label style={{ fontSize: '0.85rem' }}>Semaine</label>
-                                            <input
-                                                type="number"
-                                                step="0.01"
-                                                value={prices.base}
-                                                onChange={(e) => handlePricingChange(season, 'base', e.target.value)}
-                                            />
+                            <label>Types d'hébergement disponibles</label>
+                            {Object.entries(form.accommodationTypes || {}).length > 0 ? (
+                                <div>
+                                    {Object.entries(form.accommodationTypes).map(([key, accType]) => (
+                                        <div key={key} style={{ marginBottom: '1rem', padding: '1rem', background: 'var(--bg)', borderRadius: '4px' }}>
+                                            <h5 style={{ color: 'var(--pine)', marginBottom: '0.5rem' }}>
+                                                {accType.label}
+                                            </h5>
+                                            <div className="form-group">
+                                                <label style={{ fontSize: '0.85rem' }}>Capacité max</label>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    value={accType.maxCapacity}
+                                                    onChange={(e) => {
+                                                        setForm({
+                                                            ...form,
+                                                            accommodationTypes: {
+                                                                ...form.accommodationTypes,
+                                                                [key]: {
+                                                                    ...accType,
+                                                                    maxCapacity: parseInt(e.target.value)
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                />
+                                            </div>
+                                            
+                                            {Object.entries(accType.pricing || {}).map(([season, prices]) => (
+                                                <div key={season} style={{ marginBottom: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid #ddd' }}>
+                                                    <label style={{ fontSize: '0.8rem', textTransform: 'capitalize', color: 'var(--stone)' }}>
+                                                        {season}
+                                                    </label>
+                                                    <div className="form-row" style={{ marginTop: '0.25rem' }}>
+                                                        <div>
+                                                            <small>Semaine</small>
+                                                            <input
+                                                                type="number"
+                                                                step="0.01"
+                                                                value={prices.weekday || 0}
+                                                                onChange={(e) => handleAccommodationChange(key, season, 'weekday', e.target.value)}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <small>Weekend</small>
+                                                            <input
+                                                                type="number"
+                                                                step="0.01"
+                                                                value={prices.weekend || 0}
+                                                                onChange={(e) => handleAccommodationChange(key, season, 'weekend', e.target.value)}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-row" style={{ marginTop: '0.25rem' }}>
+                                                        <div>
+                                                            <small>Min nuits</small>
+                                                            <input
+                                                                type="number"
+                                                                min="1"
+                                                                value={prices.minNights || 2}
+                                                                onChange={(e) => handleAccommodationChange(key, season, 'minNights', e.target.value)}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <small>Max nuits</small>
+                                                            <input
+                                                                type="number"
+                                                                min="1"
+                                                                value={prices.maxNights || 7}
+                                                                onChange={(e) => handleAccommodationChange(key, season, 'maxNights', e.target.value)}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
-                                        <div>
-                                            <label style={{ fontSize: '0.85rem' }}>Fin de semaine</label>
-                                            <input
-                                                type="number"
-                                                step="0.01"
-                                                value={prices.weekend}
-                                                onChange={(e) => handlePricingChange(season, 'weekend', e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
+                                    ))}
                                 </div>
-                            ))}
+                            ) : (
+                                <p style={{ color: 'var(--stone)', fontSize: '0.9rem' }}>Aucun type d'hébergement configuré</p>
+                            )}
                         </div>
 
                         <div className="modal-actions">
