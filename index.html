@@ -1148,24 +1148,80 @@
                             <div className="modal-overlay" onClick={() => setShowModal(false)}>
                                 <div className="modal" onClick={(e) => e.stopPropagation()}>
                                     <h2>{campgrounds.find(c => c.id === editingCampground.id) ? 'Éditer camping' : 'Nouveau camping'}</h2>
+                                    
+                                    {(() => {
+                                        const errors = validateCampground(editingCampground);
+                                        return Object.keys(errors).length > 0 ? (
+                                            <div className="warning-message">
+                                                {Object.values(errors).join(', ')}
+                                            </div>
+                                        ) : null;
+                                    })()}
+
                                     <div className="modal-form-group">
                                         <label>Nom *</label>
-                                        <input type="text" value={editingCampground.name} onChange={(e) => setEditingCampground({...editingCampground, name: e.target.value})} placeholder="Ex: Camping du Lac" />
+                                        <input 
+                                            type="text" 
+                                            value={editingCampground.name} 
+                                            onChange={(e) => setEditingCampground({...editingCampground, name: e.target.value})} 
+                                            placeholder="Ex: Camping du Lac"
+                                            className={!editingCampground.name?.trim() && editingCampground.name !== undefined ? 'form-error' : ''}
+                                            autoFocus
+                                        />
+                                        {!editingCampground.name?.trim() && editingCampground.name !== undefined && (
+                                            <div className="error-message">Nom obligatoire</div>
+                                        )}
                                     </div>
+
                                     <div className="modal-form-group">
                                         <label>Région *</label>
-                                        <input type="text" value={editingCampground.region} onChange={(e) => setEditingCampground({...editingCampground, region: e.target.value})} placeholder="Ex: Laurentides" />
+                                        <input 
+                                            type="text" 
+                                            value={editingCampground.region} 
+                                            onChange={(e) => setEditingCampground({...editingCampground, region: e.target.value})} 
+                                            placeholder="Ex: Laurentides"
+                                            className={!editingCampground.region?.trim() && editingCampground.region !== undefined ? 'form-error' : ''}
+                                        />
+                                        {!editingCampground.region?.trim() && editingCampground.region !== undefined && (
+                                            <div className="error-message">Région obligatoire</div>
+                                        )}
                                     </div>
+
                                     <div className="modal-form-group">
                                         <label>Frais d'accès par personne</label>
-                                        <input type="number" step="0.01" value={editingCampground.accessFee || editingCampground.accessFeeAdult || 0} onChange={(e) => {
-                                            const val = parseFloat(e.target.value) || 0;
-                                            setEditingCampground({...editingCampground, accessFee: val, accessFeeAdult: val});
-                                        }} placeholder="0.00" />
+                                        <input 
+                                            type="number" 
+                                            step="0.01" 
+                                            min="0"
+                                            value={editingCampground.accessFee || editingCampground.accessFeeAdult || 0} 
+                                            onChange={(e) => {
+                                                const val = parseFloat(e.target.value) || 0;
+                                                setEditingCampground({...editingCampground, accessFee: val, accessFeeAdult: val});
+                                            }} 
+                                            placeholder="0.00"
+                                            className={(editingCampground.accessFee < 0 || editingCampground.accessFeeAdult < 0) ? 'form-error' : ''}
+                                        />
+                                        {(editingCampground.accessFee < 0 || editingCampground.accessFeeAdult < 0) && (
+                                            <div className="error-message">Doit être ≥ 0</div>
+                                        )}
                                     </div>
+
                                     <div className="modal-actions">
+                                        <div style={{flex: 1}}>
+                                            <div className="keyboard-hint">
+                                                <span className="kbd">Esc</span> pour fermer &nbsp; | &nbsp;
+                                                <span className="kbd">Ctrl+↵</span> pour sauvegarder
+                                            </div>
+                                        </div>
                                         <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Annuler</button>
-                                        <button className="btn btn-primary" onClick={saveEditedCampground}>Sauvegarder</button>
+                                        <button 
+                                            className="btn btn-primary" 
+                                            onClick={saveEditedCampground}
+                                            disabled={!editingCampground.name?.trim() || !editingCampground.region?.trim()}
+                                            style={{opacity: (!editingCampground.name?.trim() || !editingCampground.region?.trim()) ? 0.5 : 1, cursor: (!editingCampground.name?.trim() || !editingCampground.region?.trim()) ? 'not-allowed' : 'pointer'}}
+                                        >
+                                            Sauvegarder
+                                        </button>
                                     </div>
                                 </div>
                             </div>
