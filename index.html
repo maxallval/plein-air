@@ -956,7 +956,7 @@
                 id: 3,
                 name: 'Parc régional Montagne du Diable',
                 region: 'Laurentides',
-                favicon: '',
+                favicon: 'https://cdn.shortpixel.ai/spai2/w_216+q_lossy+ret_img+to_webp/www.parcmontagnedudiable.com/wp-content/uploads/2016/05/parc-regional-montagne2.png',
                 maxCapacity: 6,
                 dogsAllowed: false,
                 accessFeeAdult: 7.83,
@@ -1020,29 +1020,29 @@
                 ]
             },
             {
+                id: 1,
                 name: 'Parc du Poisson Blanc',
                 region: 'Outaouais',
                 favicon: 'https://poissonblanc.ca/img/favicon/pb-favicon-32x32.png',
                 maxCapacity: 16,
                 dogsAllowed: true,
                 maxDogs: 2,
-                accessFee: 1.78,
+                accessFee: 0,
                 reservationFee: 0,
                 accommodationTypes: {
-                    '1tente': { label: '1 tente', maxCapacity: 4, pricing: { basse: { weekday: 59.00, weekend: 79.00, minNights: 2, maxNights: 7 }, haute: { weekday: 89.00, weekend: 89.00, minNights: 2, maxNights: 7 } } },
-                    '2tentes': { label: '2 tentes', maxCapacity: 8, pricing: { basse: { weekday: 69.00, weekend: 99.00, minNights: 2, maxNights: 7 }, haute: { weekday: 109.00, weekend: 109.00, minNights: 2, maxNights: 7 } } },
-                    '3tentes': { label: '3 tentes', maxCapacity: 12, pricing: { basse: { weekday: 79.00, weekend: 119.00, minNights: 2, maxNights: 7 }, haute: { weekday: 129.00, weekend: 129.00, minNights: 2, maxNights: 7 } } },
-                    '4tentes': { label: '4 tentes', maxCapacity: 16, pricing: { basse: { weekday: 89.00, weekend: 139.00, minNights: 2, maxNights: 7 }, haute: { weekday: 149.00, weekend: 149.00, minNights: 2, maxNights: 7 } } }
+                    '1tente-ile': { label: 'Camping sur île - 1 tente (max 4 pers.)', maxCapacity: 4, pricing: { basse: { weekday: 59.00, weekend: 79.00, minNights: 2, maxNights: 7 }, haute: { weekday: 89.00, weekend: 89.00, minNights: 2, maxNights: 7 } } },
+                    '2tentes-ile': { label: 'Camping sur île - 2 tentes (max 8 pers.)', maxCapacity: 8, pricing: { basse: { weekday: 69.00, weekend: 99.00, minNights: 2, maxNights: 7 }, haute: { weekday: 109.00, weekend: 109.00, minNights: 2, maxNights: 7 } } },
+                    '3tentes-ile': { label: 'Camping sur île - 3 tentes (max 12 pers.)', maxCapacity: 12, pricing: { basse: { weekday: 79.00, weekend: 119.00, minNights: 2, maxNights: 7 }, haute: { weekday: 129.00, weekend: 129.00, minNights: 2, maxNights: 7 } } },
+                    '4tentes-ile': { label: 'Camping sur île - 4 tentes (max 16 pers.)', maxCapacity: 16, pricing: { basse: { weekday: 89.00, weekend: 139.00, minNights: 2, maxNights: 7 }, haute: { weekday: 149.00, weekend: 149.00, minNights: 2, maxNights: 7 } } },
+                    'prets-a-camper-pb': { label: 'Prêt-à-camper (Micro-refuge / Tente prospecteur)', maxCapacity: 4, pricing: { basse: { weekday: 99.00, weekend: 99.00, minNights: 1, maxNights: 7 }, haute: { weekday: 144.00, weekend: 144.00, minNights: 1, maxNights: 7 } } }
                 },
                 extras: [
-                    { id: 1, name: 'Canot 2 bancs', price: 43.00, billedPer: 'jour' },
-                    { id: 2, name: 'Abitibi & Co - Canot 2 bancs', price: 51.00, billedPer: 'jour' },
-                    { id: 3, name: 'Canot 3 bancs', price: 51.00, billedPer: 'jour' },
-                    { id: 4, name: 'Canot 4 bancs', price: 61.00, billedPer: 'jour' },
-                    { id: 5, name: 'Kayak de mer solo', price: 38.00, billedPer: 'jour' },
-                    { id: 6, name: 'Surf à pagaie', price: 33.00, billedPer: 'jour' },
-                    { id: 7, name: 'Surf à pagaie - Touring', price: 38.00, billedPer: 'jour' },
-                    { id: 8, name: 'Surf à pagaie enfants', price: 22.00, billedPer: 'jour' }
+                    { id: 1, name: 'Canot 16\' - 2 bancs', price: 43.00, billedPer: 'jour' },
+                    { id: 2, name: 'Canot 17\' - 3 bancs', price: 51.00, billedPer: 'jour' },
+                    { id: 3, name: 'Canot 20\' - 4 bancs', price: 61.00, billedPer: 'jour' },
+                    { id: 4, name: 'Kayak de mer solo (Epsilon 200)', price: 38.00, billedPer: 'jour' },
+                    { id: 5, name: 'Surf à pagaie (SUP) adulte', price: 33.00, billedPer: 'jour' },
+                    { id: 8, name: 'Surf à pagaie (SUP) enfants', price: 22.00, billedPer: 'jour' }
                 ]
             }
         ];
