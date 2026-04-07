@@ -21,12 +21,60 @@
         .container { display: flex; flex-direction: column; min-height: 100vh; }
 
         .header {
-            padding: 3rem 2rem;
+            padding: 2rem;
             border-bottom: 1px solid #f0f0f0;
         }
 
-        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .header-top {
+            margin-bottom: 1.5rem;
+        }
+
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
         .header p { font-size: 0.95rem; color: #666; }
+
+        .header-inputs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .header-inputs {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .header-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .header-input-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #000;
+        }
+
+        .header-input-group input,
+        .header-input-group select {
+            padding: 0.6rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: #ffffff;
+            color: #000;
+        }
+
+        .header-input-group input:focus,
+        .header-input-group select:focus {
+            outline: none;
+            border-color: #000;
+        }
 
         .tabs {
             display: flex;
@@ -150,6 +198,21 @@
         .campground-card p {
             font-size: 0.8rem;
             color: #999;
+        }
+
+        .campground-card-price {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #000;
+            text-align: right;
+            white-space: nowrap;
+            margin-left: 1rem;
+        }
+
+        .campground-card-price-label {
+            font-size: 0.7rem;
+            color: #999;
+            margin-bottom: 0.2rem;
         }
 
         .extras-list {
@@ -553,11 +616,45 @@
 
             const result = calculateCost({ startDate, endDate, numAdults, numChildren, campground: selectedCampground, accommodationType, extras });
 
+            // Fonction pour obtenir le prix de base min/max
+            const getBasePrice = (camp) => {
+                const prices = [];
+                Object.values(camp.accommodationTypes || {}).forEach(accType => {
+                    Object.values(accType.pricing || {}).forEach(season => {
+                        prices.push(season.weekday || 0);
+                    });
+                });
+                return prices.length > 0 ? Math.min(...prices) : 0;
+            };
+
             return (
                 <div className="container">
                     <div className="header">
-                        <h1>CampCalc</h1>
-                        <p>Calculateur de camping</p>
+                        <div className="header-top">
+                            <h1>CampCalc</h1>
+                            <p>Calculateur de camping</p>
+                        </div>
+
+                        {activeTab === 'calculator' && (
+                            <div className="header-inputs">
+                                <div className="header-input-group">
+                                    <label>Arrivée</label>
+                                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                                </div>
+                                <div className="header-input-group">
+                                    <label>Départ</label>
+                                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                                </div>
+                                <div className="header-input-group">
+                                    <label>Adultes</label>
+                                    <input type="number" min="0" value={numAdults} onChange={(e) => setNumAdults(Math.max(0, parseInt(e.target.value) || 0))} />
+                                </div>
+                                <div className="header-input-group">
+                                    <label>Enfants</label>
+                                    <input type="number" min="0" value={numChildren} onChange={(e) => setNumChildren(Math.max(0, parseInt(e.target.value) || 0))} />
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="tabs">
@@ -578,6 +675,10 @@
                                                         <h4>{camp.name}</h4>
                                                         <p>{camp.region}</p>
                                                     </div>
+                                                    <div className="campground-card-price">
+                                                        <div className="campground-card-price-label">à partir de</div>
+                                                        <div>{formatCAD(getBasePrice(camp))}</div>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
@@ -585,28 +686,6 @@
 
                                     {selectedCampground && (
                                         <>
-                                            <div className="form-row">
-                                                <div className="form-group">
-                                                    <label>Arrivée</label>
-                                                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                                                </div>
-                                                <div className="form-group">
-                                                    <label>Départ</label>
-                                                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                                                </div>
-                                            </div>
-
-                                            <div className="form-row">
-                                                <div className="form-group">
-                                                    <label>Adultes</label>
-                                                    <input type="number" min="0" value={numAdults} onChange={(e) => setNumAdults(Math.max(0, parseInt(e.target.value) || 0))} />
-                                                </div>
-                                                <div className="form-group">
-                                                    <label>Enfants</label>
-                                                    <input type="number" min="0" value={numChildren} onChange={(e) => setNumChildren(Math.max(0, parseInt(e.target.value) || 0))} />
-                                                </div>
-                                            </div>
-
                                             <div className="form-group">
                                                 <label>Hébergement</label>
                                                 <select value={accommodationType} onChange={(e) => setAccommodationType(e.target.value)}>
