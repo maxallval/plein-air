@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CampCalc</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -11,51 +11,58 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html, body { width: 100%; height: 100%; }
+
         body {
             font-family: 'Inter', -apple-system, sans-serif;
             background: #ffffff;
             color: #000000;
             line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .container { display: flex; flex-direction: column; min-height: 100vh; }
 
         .header {
-            padding: 2rem;
+            padding: 1.25rem;
             border-bottom: 1px solid #f0f0f0;
+            background: #ffffff;
         }
 
         .header-top {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
-        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .header p { font-size: 0.95rem; color: #666; }
+        .header h1 { 
+            font-size: clamp(1.5rem, 5vw, 2rem); 
+            font-weight: 700; 
+            margin-bottom: 0.25rem; 
+        }
+        
+        .header p { 
+            font-size: clamp(0.85rem, 2.5vw, 0.95rem); 
+            color: #666; 
+        }
 
         .header-inputs {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        @media (max-width: 900px) {
-            .header-inputs {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
         }
 
         .header-input-group {
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 0.35rem;
         }
 
         .header-input-group label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
             color: #000;
         }
 
@@ -64,7 +71,7 @@
             padding: 0.6rem;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-family: inherit;
             background: #ffffff;
             color: #000;
@@ -79,7 +86,7 @@
         .tabs {
             display: flex;
             border-bottom: 1px solid #f0f0f0;
-            padding: 0 2rem;
+            padding: 0;
             background: #ffffff;
             position: sticky;
             top: 0;
@@ -88,15 +95,16 @@
 
         .tab-btn {
             flex: 1;
-            padding: 1rem 2rem;
+            padding: 0.85rem 0.75rem;
             border: none;
             background: none;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 500;
             color: #999;
             border-bottom: 2px solid transparent;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .tab-btn:hover { color: #000; }
@@ -104,7 +112,7 @@
 
         .content {
             flex: 1;
-            padding: 2rem;
+            padding: 1rem;
             max-width: 1200px;
             margin: 0 auto;
             width: 100%;
@@ -112,20 +120,23 @@
 
         .calculator {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: start;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
         }
 
-        @media (max-width: 900px) {
-            .calculator { grid-template-columns: 1fr; }
+        @media (min-width: 900px) {
+            .calculator {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+                align-items: start;
+            }
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .form-group label {
@@ -138,26 +149,19 @@
 
         .form-group input,
         .form-group select {
-            padding: 0.75rem;
+            padding: 0.7rem;
             border: 1px solid #e0e0e0;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 1rem;
             font-family: inherit;
             background: #ffffff;
             color: #000;
-            transition: border 0.2s;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
             border-color: #000;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
         }
 
         .campground-list {
@@ -177,6 +181,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 0.75rem;
+            min-height: 70px;
+        }
+
+        .campground-card:active {
+            background: #f5f5f5;
         }
 
         .campground-card:hover {
@@ -189,14 +199,20 @@
             background: #f0f0f0;
         }
 
+        .campground-info {
+            flex: 1;
+            min-width: 0;
+        }
+
         .campground-card h4 {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 0.25rem;
+            word-break: break-word;
         }
 
         .campground-card p {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #999;
         }
 
@@ -205,12 +221,11 @@
             font-weight: 600;
             color: #000;
             text-align: right;
-            white-space: nowrap;
-            margin-left: 1rem;
+            flex-shrink: 0;
         }
 
         .campground-card-price-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #999;
             margin-bottom: 0.2rem;
         }
@@ -223,48 +238,65 @@
         }
 
         .extra-item {
-            padding: 1rem;
+            padding: 0.85rem;
             border: 1px solid #f0f0f0;
-            border-radius: 6px;
+            border-radius: 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: #fafafa;
+            gap: 0.75rem;
+            min-height: 65px;
+        }
+
+        .extra-info {
+            flex: 1;
+            min-width: 0;
         }
 
         .extra-name {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
+            word-break: break-word;
         }
 
         .extra-price {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #999;
-            margin-top: 0.25rem;
+            margin-top: 0.2rem;
         }
 
         .qty-control {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.4rem;
             background: #ffffff;
-            padding: 0.5rem 0.75rem;
+            padding: 0.35rem 0.5rem;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
+            flex-shrink: 0;
         }
 
         .qty-btn {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border: none;
             background: #ffffff;
             color: #000;
             border: 1px solid #e0e0e0;
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             transition: all 0.2s;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-btn:active {
+            background: #f5f5f5;
         }
 
         .qty-btn:hover {
@@ -272,42 +304,49 @@
         }
 
         .qty-display {
-            min-width: 24px;
+            min-width: 18px;
             text-align: center;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
         .results-box {
             border: 1px solid #e0e0e0;
-            padding: 2rem;
-            border-radius: 8px;
-            position: sticky;
-            top: 80px;
+            padding: 1.25rem;
+            border-radius: 6px;
             background: #ffffff;
         }
 
+        @media (min-width: 900px) {
+            .results-box {
+                position: sticky;
+                top: 80px;
+                padding: 1.5rem;
+            }
+        }
+
         .result-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: #999;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .price-display {
-            font-size: 3rem;
+            font-size: clamp(2rem, 6vw, 3rem);
             font-weight: 700;
-            margin-bottom: 2rem;
+            margin-bottom: 1.25rem;
             color: #000;
+            line-height: 1;
         }
 
         .breakdown-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
+            margin-bottom: 0.6rem;
+            font-size: 0.85rem;
         }
 
         .breakdown-label {
@@ -322,11 +361,10 @@
         .sub-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
             border-top: 1px solid #f0f0f0;
-            font-size: 0.9rem;
         }
 
         .sub-info-item {
@@ -335,60 +373,65 @@
 
         .sub-info-label {
             color: #999;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
             margin-bottom: 0.25rem;
         }
 
         .sub-info-value {
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: clamp(0.95rem, 3vw, 1.1rem);
         }
 
         .error {
             padding: 0.75rem;
             background: #fff3f3;
             border: 1px solid #ffdddd;
-            border-radius: 6px;
+            border-radius: 4px;
             color: #d32f2f;
-            font-size: 0.85rem;
-            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
         }
 
         .info-text {
-            padding: 1.5rem;
+            padding: 1.25rem;
             background: #f9f9f9;
             border: 1px solid #f0f0f0;
-            border-radius: 6px;
+            border-radius: 4px;
             color: #999;
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .admin-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
         }
 
-        @media (max-width: 900px) {
-            .admin-grid { grid-template-columns: 1fr; }
+        @media (min-width: 900px) {
+            .admin-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
         }
 
         .card {
             border: 1px solid #f0f0f0;
-            padding: 2rem;
-            border-radius: 8px;
+            padding: 1.25rem;
+            border-radius: 6px;
         }
 
         .card h3 {
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
             border-bottom: 1px solid #f0f0f0;
-            padding-bottom: 1rem;
+            padding-bottom: 0.75rem;
         }
 
         .campground-item {
-            padding: 1rem;
+            padding: 0.75rem 0;
             border-bottom: 1px solid #f0f0f0;
         }
 
@@ -397,39 +440,39 @@
         }
 
         .campground-item h4 {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.2rem;
         }
 
         .campground-item p {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #999;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
         }
 
         .stat-card {
-            padding: 1rem;
+            padding: 0.9rem;
             border: 1px solid #f0f0f0;
-            border-radius: 6px;
+            border-radius: 4px;
             text-align: center;
         }
 
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: #999;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
+            letter-spacing: 0.4px;
+            margin-bottom: 0.4rem;
         }
 
         .stat-value {
-            font-size: 1.8rem;
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
             font-weight: 700;
         }
     </style>
@@ -454,8 +497,8 @@
             const nights = calculateNights(startDate, endDate);
             const totalPersons = numAdults + numChildren;
 
-            if (nights === 0) return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: 'Minimum 1 nuit' };
-            if (totalPersons === 0) return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: 'Minimum 1 personne' };
+            if (nights === 0) return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: 'Min 1 nuit' };
+            if (totalPersons === 0) return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: 'Min 1 personne' };
 
             const accType = campground.accommodationTypes?.[accommodationType];
             if (!accType) return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: 'Type invalide' };
@@ -616,7 +659,6 @@
 
             const result = calculateCost({ startDate, endDate, numAdults, numChildren, campground: selectedCampground, accommodationType, extras });
 
-            // Fonction pour obtenir le prix de base min/max
             const getBasePrice = (camp) => {
                 const prices = [];
                 Object.values(camp.accommodationTypes || {}).forEach(accType => {
@@ -671,7 +713,7 @@
                                         <div className="campground-list">
                                             {campgrounds.map(camp => (
                                                 <div key={camp.id} className={`campground-card ${selectedCampground?.id === camp.id ? 'selected' : ''}`} onClick={() => setSelectedCampground(camp)}>
-                                                    <div>
+                                                    <div className="campground-info">
                                                         <h4>{camp.name}</h4>
                                                         <p>{camp.region}</p>
                                                     </div>
@@ -703,7 +745,7 @@
                                                             const extrasState = extras.find(e => e.id === extra.id) || { quantity: 0 };
                                                             return (
                                                                 <div key={extra.id} className="extra-item">
-                                                                    <div>
+                                                                    <div className="extra-info">
                                                                         <div className="extra-name">{extra.name}</div>
                                                                         <div className="extra-price">{formatCAD(extra.price)}/{extra.billedPer === 'jour' ? 'jour' : 'séjour'}</div>
                                                                     </div>
