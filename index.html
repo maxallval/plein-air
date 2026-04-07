@@ -866,9 +866,10 @@
                 if (extra.quantity > 0) {
                     const extraData = campground.extras.find(e => e.id === extra.id);
                     if (extraData) {
-                        // Calcul par jour: du 21 au 24 = 4 jours (21, 22, 23, 24)
+                        // Calcul par jour: du 21 au 24 = 4 jours
+                        // nuits = 3, donc jours d'utilisation = nuits + 1
                         const daysOfUse = extraData.billedPer === 'jour' 
-                            ? Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24))
+                            ? nights + 1
                             : 1;
                         extrasTotal += extraData.price * extra.quantity * daysOfUse;
                     }
@@ -1223,7 +1224,7 @@
                                                         {selectedCampground.extras.map(extra => {
                                                             const extrasState = extras.find(e => e.id === extra.id) || { quantity: 0 };
                                                             const daysOfUse = extra.billedPer === 'jour' 
-                                                                ? Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24))
+                                                                ? calculateNights(startDate, endDate) + 1
                                                                 : 1;
                                                             return (
                                                                 <div key={extra.id} className="extra-item">
