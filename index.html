@@ -1199,11 +1199,10 @@
 
             useEffect(() => {
                 if (campgrounds.length > 0 && !selectedCampground) {
-                    const first = campgrounds[0];
-                    setSelectedCampground(first);
-                    setExtras(first.extras.map(e => ({ id: e.id, quantity: 0 })));
-                    const firstKey = Object.keys(first.accommodationTypes)[0];
-                    setAccommodationType(firstKey);
+                    // Ne pas sélectionner au démarrage
+                    setSelectedCampground(null);
+                    setExtras([]);
+                    setAccommodationType('');
                 }
             }, []);
 
@@ -1252,6 +1251,8 @@
                 return c.id === 4 ? 15.00 : base;
             };
 
+            const sortedCampgrounds = [...campgrounds].sort((a, b) => getBasePrice(a) - getBasePrice(b));
+
             const handleShare = () => {
                 const text = `${selectedCampground.name}\n\nDates: ${startDate} au ${endDate}\nPersonnes: ${numAdults} adultes, ${numChildren} enfants\n\nCoûts:\nHébergement: ${formatCAD(result.breakdown.hebergement)}\nFrais d'accès: ${formatCAD(result.breakdown.acces)}\nExtras: ${formatCAD(result.breakdown.extras)}\nTaxes: ${formatCAD(result.breakdown.taxes)}\n\nTOTAL: ${formatCAD(result.total)}\nPar personne: ${formatCAD(result.totalPerPerson)}\nPar nuit: ${formatCAD(result.totalPerNight)}`;
                 if (navigator.share) {
@@ -1283,7 +1284,7 @@
 
                             <div className="campgrounds-section">
                                 <div className="campgrounds-grid">
-                                    {campgrounds.map(c => (
+                                    {sortedCampgrounds.map(c => (
                                         <div key={c.id} className={`campground-card ${selectedCampground?.id === c.id ? 'selected' : ''}`} onClick={() => handleCampgroundChange(c)}>
                                             <div className="campground-title">
                                                 {c.favicon && <img src={c.favicon} alt="" />}
