@@ -561,9 +561,8 @@
 
         const getSeason = (date) => {
             const month = new Date(date).getMonth();
-            // Jun-Aug: haute saison, Dec-Jan: saison moyenne, autres: basse saison
+            // Jun-Aug: haute saison, autres: basse saison
             if (month >= 5 && month <= 7) return 'haute';
-            if (month === 11 || month === 0) return 'moyenne';
             return 'basse';
         };
 
@@ -593,13 +592,23 @@
                 taxes: 0
             };
 
-            if (!campground || !startDate || !endDate || !accommodationType) {
+            if (!campground || !startDate || !endDate) {
                 return {
                     total: 0,
                     totalPerPerson: 0,
                     totalPerNight: 0,
                     breakdown,
-                    error: 'Paramètres incomplets'
+                    error: 'Sélectionnez un camping et des dates'
+                };
+            }
+
+            if (!accommodationType) {
+                return {
+                    total: 0,
+                    totalPerPerson: 0,
+                    totalPerNight: 0,
+                    breakdown,
+                    error: 'Sélectionnez un type d\'hébergement'
                 };
             }
 
@@ -823,8 +832,31 @@
             const [numAdults, setNumAdults] = useState(2);
             const [numChildren, setNumChildren] = useState(0);
             const [selectedCampground, setSelectedCampground] = useState(null);
-            const [accommodationType, setAccommodationType] = useState('Tente');
+            const [accommodationType, setAccommodationType] = useState('');
             const [extras, setExtras] = useState([]);
+
+            // Initialiser le premier campground et extras au chargement
+            useEffect(() => {
+                if (campgrounds.length > 0 && !selectedCampground) {
+                    const firstCampground = campgrounds[0];
+                    setSelectedCampground(firstCampground);
+                    
+                    // Initialiser extras
+                    setExtras(
+                        firstCampground.extras.map(e => ({
+                            id: e.id,
+                            selected: false,
+                            quantity: 0
+                        }))
+                    );
+                    
+                    // Initialiser accommodation type
+                    const firstKey = Object.keys(firstCampground.accommodationTypes || {})[0];
+                    if (firstKey) {
+                        setAccommodationType(firstKey);
+                    }
+                }
+            }, []);
 
             // Initialiser extras et accommodationType quand campground change
             useEffect(() => {
