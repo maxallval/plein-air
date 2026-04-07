@@ -119,8 +119,8 @@
         }
 
         .campground-card.selected {
-            border-color: #000;
-            background: #fafafa;
+            border-color: #22c55e;
+            background: #f0fdf4;
         }
 
         .campground-header {
@@ -749,6 +749,21 @@
                                         Confirmer
                                     </button>
                                 </div>
+
+                                {tempStart && tempEnd && (
+                                    <div style={{
+                                        marginTop: '1.5rem',
+                                        padding: '1rem',
+                                        background: '#f0fdf4',
+                                        borderRadius: '6px',
+                                        textAlign: 'center',
+                                        borderLeft: '4px solid #22c55e'
+                                    }}>
+                                        <div style={{fontSize: '1.1rem', fontWeight: '600', color: '#000'}}>
+                                            Séjour de {calculateNights(tempStart, tempEnd)} nuits / {calculateNights(tempStart, tempEnd) + 1} jours
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
