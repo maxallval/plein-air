@@ -818,7 +818,22 @@
             const [activeTab, setActiveTab] = useState('calculator');
             const [campgrounds, setCampgrounds] = useState(() => {
                 const saved = localStorage.getItem('campgrounds');
-                return saved ? JSON.parse(saved) : DEFAULT_CAMPGROUNDS;
+                // Si localStorage a des anciennes données (Mont-Tremblant, Lac-Mégantic, etc), réinitialiser
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        // Vérifier si c'est l'ancienne version
+                        if (parsed.length > 1 || (parsed[0]?.name === 'Camping Mont-Tremblant')) {
+                            // Ancienne version, réinitialiser
+                            localStorage.removeItem('campgrounds');
+                            return DEFAULT_CAMPGROUNDS;
+                        }
+                        return parsed;
+                    } catch (e) {
+                        return DEFAULT_CAMPGROUNDS;
+                    }
+                }
+                return DEFAULT_CAMPGROUNDS;
             });
 
             // Sauvegarder les campgrounds
