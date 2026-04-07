@@ -1019,6 +1019,24 @@
                 setShowCalendar(false);
             };
 
+            const formatDateRange = () => {
+                if (!startDate || !endDate) return 'Choisir dates';
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const startDay = start.getDate();
+                const endDay = end.getDate();
+                const monthName = start.toLocaleDateString('fr-FR', { month: 'long' });
+                return `${startDay}-${endDay} ${monthName}`;
+            };
+
+            const formatPersonnes = () => {
+                if (numAdults === 0 && numChildren === 0) return 'Choisir personnes';
+                const parts = [];
+                if (numAdults > 0) parts.push(`${numAdults} adulte${numAdults !== 1 ? 's' : ''}`);
+                if (numChildren > 0) parts.push(`${numChildren} enfant${numChildren !== 1 ? 's' : ''}`);
+                return parts.join(' + ');
+            };
+
             const monthName = month.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
             const days = Array.from({ length: daysInMonth(month) }, (_, i) => i + 1);
             const empty = Array.from({ length: firstDay(month) }, (_, i) => i);
@@ -1033,35 +1051,23 @@
                 <div className="section-header">
                     <div className="container">
                         {/* Inputs row */}
-                        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.25rem'}}>
+                        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem'}}>
                             <div className="input-group">
-                                <label className="input-label">Séjour</label>
                                 <button className="input-button" onClick={() => {
                                     setShowCalendar(!showCalendar);
                                     setShowAdultes(false);
                                     setShowEnfants(false);
                                 }}>
-                                    {startDate && endDate ? `${startDate} → ${endDate}` : 'Sélectionner dates'}
+                                    {formatDateRange()}
                                 </button>
                             </div>
-                            <div className="input-group" onClick={() => {
-                                setShowAdultes(!showAdultes);
-                                setShowCalendar(false);
-                                setShowEnfants(false);
-                            }}>
-                                <label className="input-label">Adultes</label>
-                                <button className="input-button">
-                                    {numAdults} personne{numAdults !== 1 ? 's' : ''}
-                                </button>
-                            </div>
-                            <div className="input-group" onClick={() => {
-                                setShowEnfants(!showEnfants);
-                                setShowCalendar(false);
-                                setShowAdultes(false);
-                            }}>
-                                <label className="input-label">Enfants</label>
-                                <button className="input-button">
-                                    {numChildren} personne{numChildren !== 1 ? 's' : ''}
+                            <div className="input-group">
+                                <button className="input-button" onClick={() => {
+                                    setShowAdultes(!showAdultes);
+                                    setShowCalendar(false);
+                                    setShowEnfants(false);
+                                }}>
+                                    {formatPersonnes()}
                                 </button>
                             </div>
                         </div>
