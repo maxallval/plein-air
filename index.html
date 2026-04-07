@@ -761,11 +761,15 @@
         /* =============== RESPONSIVE =============== */
         @media (max-width: 768px) {
             .header {
-                padding: 1.75rem 1rem;
+                padding: 1.25rem 1rem;
             }
 
             .header h1 {
-                font-size: 1.75rem;
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 0.85rem;
             }
 
             .tabs {
@@ -773,8 +777,30 @@
             }
 
             .tab-btn {
-                padding: 0.85rem 1rem;
+                padding: 0.75rem 1rem;
                 font-size: 0.85rem;
+            }
+
+            .summary-bar {
+                padding: 0.75rem 1rem;
+            }
+
+            .summary-content {
+                gap: 1rem;
+            }
+
+            .step-item {
+                gap: 0.5rem;
+            }
+
+            .step-circle {
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+            }
+
+            .step-label {
+                font-size: 0.8rem;
             }
 
             .campgrounds-grid {
@@ -792,10 +818,6 @@
 
             .price-display {
                 font-size: 2rem;
-            }
-
-            .summary-content {
-                grid-template-columns: 1fr;
             }
 
             .inputs-grid {
@@ -1040,14 +1062,14 @@
                 <div className="section-header">
                     <div className="container">
                         <div className="inputs-grid">
-                            <PersonSelector label="Adultes" value={numAdults} onChange={setNumAdults} />
-                            <PersonSelector label="Enfants" value={numChildren} onChange={setNumChildren} />
                             <div className="input-group">
                                 <label className="input-label">Séjour</label>
                                 <button className="input-button" onClick={() => setShow(!show)}>
                                     {startDate && endDate ? `${startDate} → ${endDate}` : 'Sélectionner dates'}
                                 </button>
                             </div>
+                            <PersonSelector label="Adultes" value={numAdults} onChange={setNumAdults} />
+                            <PersonSelector label="Enfants" value={numChildren} onChange={setNumChildren} />
                         </div>
 
                         {show && (
