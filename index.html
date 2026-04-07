@@ -1061,7 +1061,7 @@
             return (
                 <div className="section-header">
                     <div className="container">
-                        <div className="inputs-grid">
+                        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.25rem', marginBottom: show ? '1rem' : '0'}}>
                             <div className="input-group">
                                 <label className="input-label">Séjour</label>
                                 <button className="input-button" onClick={() => setShow(!show)}>
@@ -1138,7 +1138,7 @@
                         </div>
                         <div className="step-item">
                             <div className={`step-circle ${hasDates && hasPers && hasCamp ? 'completed' : 'pending'}`}>{hasDates && hasPers && hasCamp ? '✓' : ''}</div>
-                            <span className={`step-label ${hasDates && hasPers && hasCamp ? 'completed' : 'pending'}`}>Résumé</span>
+                            <span className={`step-label ${hasDates && hasPers && hasCamp ? 'completed' : 'pending'}`}>Total</span>
                         </div>
                     </div>
                 </div>
