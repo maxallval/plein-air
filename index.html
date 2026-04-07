@@ -628,6 +628,68 @@
         .action-btn.delete:hover {
             background: #ffcdd2;
         }
+
+        /* VALIDATION & FEEDBACK */
+        .form-error {
+            border-color: #d32f2f !important;
+            background: #fff3f3 !important;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 0.75rem;
+            margin-top: 0.3rem;
+            font-weight: 500;
+        }
+
+        .success-message {
+            padding: 0.75rem;
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 4px;
+            color: #2e7d32;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        .warning-message {
+            padding: 0.75rem;
+            background: #fff3e0;
+            border: 1px solid #ffe0b2;
+            border-radius: 4px;
+            color: #e65100;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .keyboard-hint {
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 0.5rem;
+        }
+
+        .kbd {
+            display: inline-block;
+            padding: 0.2rem 0.4rem;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-family: monospace;
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
     </style>
 
 </head>
@@ -801,7 +863,8 @@
             };
 
             const deleteCampground = (id) => {
-                if (confirm('Êtes-vous sûr de vouloir supprimer ce camping?')) {
+                const camp = campgrounds.find(c => c.id === id);
+                if (confirm(`Êtes-vous sûr de vouloir supprimer "${camp.name}"?`)) {
                     const updated = campgrounds.filter(c => c.id !== id);
                     saveCampgrounds(updated);
                     if (selectedCampground?.id === id) {
@@ -815,18 +878,52 @@
                 setShowModal(true);
             };
 
+            const validateCampground = (camp) => {
+                const errors = {};
+                if (!camp.name?.trim()) errors.name = 'Nom obligatoire';
+                if (!camp.region?.trim()) errors.region = 'Région obligatoire';
+                if (camp.accessFee < 0 || camp.accessFeeAdult < 0) errors.accessFee = 'Doit être ≥ 0';
+                return errors;
+            };
+
             const saveEditedCampground = () => {
-                if (!editingCampground?.name) {
-                    alert('Le nom est obligatoire');
+                const errors = validateCampground(editingCampground);
+                if (Object.keys(errors).length > 0) {
+                    alert('Erreurs: ' + Object.values(errors).join(', '));
                     return;
                 }
-                const updated = campgrounds.map(c => c.id === editingCampground.id ? editingCampground : c);
+
+                const isNew = !campgrounds.find(c => c.id === editingCampground.id);
+                let updated;
+                
+                if (isNew) {
+                    updated = [...campgrounds, editingCampground];
+                } else {
+                    updated = campgrounds.map(c => c.id === editingCampground.id ? editingCampground : c);
+                }
+                
                 saveCampgrounds(updated);
                 setShowModal(false);
                 setEditingCampground(null);
             };
 
             const isDefaultCampground = (camp) => camp.id === 1 || camp.id === 2;
+
+            // Gestion raccourcis clavier
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    // Esc pour fermer modal
+                    if (e.key === 'Escape' && showModal) {
+                        setShowModal(false);
+                    }
+                    // Ctrl+Enter ou Cmd+Enter pour sauvegarder
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && showModal) {
+                        saveEditedCampground();
+                    }
+                };
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [showModal, editingCampground]);
 
             useEffect(() => {
                 if (campgrounds.length > 0 && !selectedCampground) {
@@ -1003,7 +1100,21 @@
                         {activeTab === 'admin' && (
                             <div className="admin-grid">
                                 <div className="card">
-                                    <h3>Campings</h3>
+                                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #f0f0f0'}}>
+                                        <h3 style={{margin: 0}}>Campings</h3>
+                                        <button className="btn btn-primary btn-small" onClick={() => {
+                                            setEditingCampground({
+                                                id: Date.now(),
+                                                name: '',
+                                                region: '',
+                                                accessFee: 0,
+                                                reservationFee: 0,
+                                                accommodationTypes: {},
+                                                extras: []
+                                            });
+                                            setShowModal(true);
+                                        }}>+ Ajouter</button>
+                                    </div>
                                     {campgrounds.map(camp => (
                                         <div key={camp.id} className="campground-item">
                                             <h4>{camp.name}</h4>
@@ -1036,21 +1147,21 @@
                         {showModal && editingCampground && (
                             <div className="modal-overlay" onClick={() => setShowModal(false)}>
                                 <div className="modal" onClick={(e) => e.stopPropagation()}>
-                                    <h2>Éditer camping</h2>
+                                    <h2>{campgrounds.find(c => c.id === editingCampground.id) ? 'Éditer camping' : 'Nouveau camping'}</h2>
                                     <div className="modal-form-group">
-                                        <label>Nom</label>
-                                        <input type="text" value={editingCampground.name} onChange={(e) => setEditingCampground({...editingCampground, name: e.target.value})} />
+                                        <label>Nom *</label>
+                                        <input type="text" value={editingCampground.name} onChange={(e) => setEditingCampground({...editingCampground, name: e.target.value})} placeholder="Ex: Camping du Lac" />
                                     </div>
                                     <div className="modal-form-group">
-                                        <label>Région</label>
-                                        <input type="text" value={editingCampground.region} onChange={(e) => setEditingCampground({...editingCampground, region: e.target.value})} />
+                                        <label>Région *</label>
+                                        <input type="text" value={editingCampground.region} onChange={(e) => setEditingCampground({...editingCampground, region: e.target.value})} placeholder="Ex: Laurentides" />
                                     </div>
                                     <div className="modal-form-group">
                                         <label>Frais d'accès par personne</label>
                                         <input type="number" step="0.01" value={editingCampground.accessFee || editingCampground.accessFeeAdult || 0} onChange={(e) => {
-                                            const val = parseFloat(e.target.value);
+                                            const val = parseFloat(e.target.value) || 0;
                                             setEditingCampground({...editingCampground, accessFee: val, accessFeeAdult: val});
-                                        }} />
+                                        }} placeholder="0.00" />
                                     </div>
                                     <div className="modal-actions">
                                         <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Annuler</button>
