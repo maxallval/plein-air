@@ -1029,14 +1029,6 @@
                 return `${startDay}-${endDay} ${monthName}`;
             };
 
-            const formatPersonnes = () => {
-                if (numAdults === 0 && numChildren === 0) return 'Choisir personnes';
-                const parts = [];
-                if (numAdults > 0) parts.push(`${numAdults} adulte${numAdults !== 1 ? 's' : ''}`);
-                if (numChildren > 0) parts.push(`${numChildren} enfant${numChildren !== 1 ? 's' : ''}`);
-                return parts.join(' + ');
-            };
-
             const monthName = month.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
             const days = Array.from({ length: daysInMonth(month) }, (_, i) => i + 1);
             const empty = Array.from({ length: firstDay(month) }, (_, i) => i);
@@ -1051,7 +1043,7 @@
                 <div className="section-header">
                     <div className="container">
                         {/* Inputs row */}
-                        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem'}}>
+                        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.25rem'}}>
                             <div className="input-group">
                                 <button className="input-button" onClick={() => {
                                     setShowCalendar(!showCalendar);
@@ -1067,7 +1059,16 @@
                                     setShowCalendar(false);
                                     setShowEnfants(false);
                                 }}>
-                                    {formatPersonnes()}
+                                    {numAdults === 0 ? 'Choisir adultes' : `${numAdults} adulte${numAdults !== 1 ? 's' : ''}`}
+                                </button>
+                            </div>
+                            <div className="input-group">
+                                <button className="input-button" onClick={() => {
+                                    setShowEnfants(!showEnfants);
+                                    setShowCalendar(false);
+                                    setShowAdultes(false);
+                                }}>
+                                    {numChildren === 0 ? 'Choisir enfants' : `${numChildren} enfant${numChildren !== 1 ? 's' : ''}`}
                                 </button>
                             </div>
                         </div>
