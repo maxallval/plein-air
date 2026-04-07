@@ -1023,9 +1023,12 @@
             result
         }) {
             const handleExtraChange = (id, field, value) => {
+                console.log(`Extra changed: id=${id}, field=${field}, value=${value}`);
+                console.log('Extras before:', extras);
                 setExtras(extras.map(e =>
                     e.id === id ? { ...e, [field]: value } : e
                 ));
+                console.log('Extras after:', extras);
             };
 
             // Validation: chiens non permis
@@ -1141,64 +1144,26 @@
                             <div className="extras-section">
                                 <label style={{ display: 'block', marginBottom: '1rem' }}>Extras optionnels</label>
                                 {selectedCampground.extras.map(extra => {
-                                    const extrasState = extras.find(e => e.id === extra.id) || { selected: false, quantity: 0 };
+                                    const extrasState = extras.find(e => e.id === extra.id);
                                     return (
-                                        <div key={extra.id} className="extra-item">
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                                                <div style={{ flex: 1 }}>
-                                                    <strong>{extra.name}</strong>
-                                                    <br />
-                                                    <small style={{ color: 'var(--stone)' }}>
-                                                        {formatCAD(extra.price)} par {extra.billedPer === 'jour' ? 'jour' : 'séjour'}
-                                                    </small>
-                                                </div>
+                                        <div key={extra.id} style={{ padding: '1rem', background: '#f5f5f5', marginBottom: '1rem', borderRadius: '4px' }}>
+                                            <div style={{ marginBottom: '0.5rem' }}>
+                                                <strong>{extra.name}</strong>
+                                                <br />
+                                                <small style={{ color: '#666' }}>
+                                                    {formatCAD(extra.price)} par {extra.billedPer === 'jour' ? 'jour' : 'séjour'}
+                                                </small>
                                             </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'flex-end' }}>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        if (extrasState.quantity > 0) {
-                                                            handleExtraChange(extra.id, 'quantity', extrasState.quantity - 1);
-                                                        }
-                                                    }}
-                                                    style={{
-                                                        padding: '0.5rem 0.75rem',
-                                                        background: '#7a9b6f',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '4px',
-                                                        cursor: extrasState.quantity > 0 ? 'pointer' : 'default',
-                                                        opacity: extrasState.quantity > 0 ? 1 : 0.5,
-                                                        fontSize: '16px',
-                                                        fontWeight: 'bold',
-                                                        minWidth: '40px'
-                                                    }}
-                                                >
-                                                    −
-                                                </button>
-                                                <span style={{ minWidth: '40px', textAlign: 'center', fontWeight: 'bold', fontSize: '18px' }}>
-                                                    {extrasState.quantity}
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        handleExtraChange(extra.id, 'quantity', extrasState.quantity + 1);
-                                                        handleExtraChange(extra.id, 'selected', true);
-                                                    }}
-                                                    style={{
-                                                        padding: '0.5rem 0.75rem',
-                                                        background: '#2d5016',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        fontSize: '16px',
-                                                        fontWeight: 'bold',
-                                                        minWidth: '40px'
-                                                    }}
-                                                >
-                                                    +
-                                                </button>
+                                            <div style={{ marginTop: '0.75rem' }}>
+                                                <button onClick={() => {
+                                                    console.log('MINUS clicked');
+                                                    handleExtraChange(extra.id, 'quantity', Math.max(0, (extrasState?.quantity || 0) - 1));
+                                                }}>−</button>
+                                                <span style={{ margin: '0 1rem', fontWeight: 'bold' }}>{extrasState?.quantity || 0}</span>
+                                                <button onClick={() => {
+                                                    console.log('PLUS clicked');
+                                                    handleExtraChange(extra.id, 'quantity', (extrasState?.quantity || 0) + 1);
+                                                }}>+</button>
                                             </div>
                                         </div>
                                     );
