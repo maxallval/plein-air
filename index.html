@@ -1,94 +1,1420 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Camping Cost Calculator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampCalc - Calculateur de Camping Québec</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --pine: #2d5016;
+            --sage: #7a9b6f;
+            --cream: #f5f3ef;
+            --stone: #5a5450;
+            --accent: #c67c4e;
+            --warning: #d97706;
+            --success: #6b9e5a;
+            --text: #2a2a2a;
+            --border: #d4cfc8;
+            --bg: #faf9f7;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Georgia', serif;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--pine) 0%, #3d6b1f 100%);
+            color: white;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            background: white;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1.2rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--stone);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.85rem;
+        }
+
+        .tab-btn:hover {
+            color: var(--pine);
+            background: rgba(45, 80, 22, 0.03);
+        }
+
+        .tab-btn.active {
+            color: var(--pine);
+            border-bottom-color: var(--pine);
+        }
+
+        .content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CALCULATOR SECTION */
+        .calculator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .calculator {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--pine);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: white;
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--pine);
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .campground-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .campground-card {
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .campground-card:hover {
+            border-color: var(--pine);
+            background: rgba(45, 80, 22, 0.02);
+            transform: translateY(-2px);
+        }
+
+        .campground-card.selected {
+            border-color: var(--pine);
+            background: rgba(45, 80, 22, 0.1);
+            box-shadow: 0 4px 12px rgba(45, 80, 22, 0.15);
+        }
+
+        .campground-card h4 {
+            margin-bottom: 0.5rem;
+            color: var(--pine);
+        }
+
+        .campground-card p {
+            font-size: 0.85rem;
+            color: var(--stone);
+            margin-bottom: 0.25rem;
+        }
+
+        .campground-price {
+            color: var(--accent);
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        /* RESULTS SECTION */
+        .results {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--pine);
+            position: sticky;
+            top: 100px;
+        }
+
+        .result-title {
+            color: var(--pine);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .price-main {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .price-label {
+            color: var(--stone);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .breakdown {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .breakdown-row.total {
+            font-weight: 700;
+            color: var(--pine);
+            border-top: 1px solid var(--border);
+            padding-top: 0.75rem;
+            margin-top: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .breakdown-label {
+            color: var(--stone);
+        }
+
+        .breakdown-value {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .error {
+            padding: 1rem;
+            background: rgba(217, 119, 6, 0.1);
+            border-left: 4px solid var(--warning);
+            border-radius: 4px;
+            color: var(--warning);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .success {
+            padding: 1rem;
+            background: rgba(107, 158, 90, 0.1);
+            border-left: 4px solid var(--success);
+            border-radius: 4px;
+            color: var(--success);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* ADMIN SECTION */
+        .admin-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .section-title {
+            color: var(--pine);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .campground-item {
+            padding: 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .campground-item h5 {
+            color: var(--pine);
+            margin-bottom: 0.25rem;
+        }
+
+        .campground-item p {
+            font-size: 0.85rem;
+            color: var(--stone);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--pine);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e3810;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45, 80, 22, 0.2);
+        }
+
+        .btn-secondary {
+            background: var(--sage);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #6a8a5f;
+        }
+
+        .btn-danger {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b85f00;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .extras-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .extra-item {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+        }
+
+        .checkbox-label input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--pine);
+        }
+
+        .info-text {
+            font-size: 0.85rem;
+            color: var(--stone);
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(45, 80, 22, 0.05);
+            border-radius: 4px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeIn 0.2s;
+        }
+
+        .modal {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal h2 {
+            margin-bottom: 1.5rem;
+            color: var(--pine);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(45, 80, 22, 0.1) 0%, rgba(122, 155, 111, 0.1) 100%);
+            padding: 1.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            color: var(--stone);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--pine);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .tabs {
+                padding: 0 1rem;
+            }
+
+            .tab-btn {
+                padding: 1rem;
+                font-size: 0.75rem;
+            }
+
+            .calculator {
+                grid-template-columns: 1fr;
+            }
+
+            .results {
+                position: static;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
-  <div class="p-6 max-w-3xl mx-auto space-y-6">
-    <h1 class="text-2xl font-bold">Camping Cost Calculator</h1>
+<body>
+    <div id="root"></div>
 
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <label>People</label>
-        <input id="people" type="number" value="2" class="border p-2 w-full" />
-      </div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-      <div>
-        <label>Nights</label>
-        <input id="nights" type="number" value="2" class="border p-2 w-full" />
-      </div>
+        // ==================== UTILITIES ====================
+        const formatCAD = (value) => {
+            return new Intl.NumberFormat('fr-CA', {
+                style: 'currency',
+                currency: 'CAD'
+            }).format(value);
+        };
 
-      <div>
-        <label>Dogs</label>
-        <input id="dogs" type="number" value="0" class="border p-2 w-full" />
-      </div>
+        const calculateNights = (start, end) => {
+            if (!start || !end) return 0;
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            return Math.max(0, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)));
+        };
 
-      <div>
-        <label>Campground</label>
-        <select id="campground" class="border p-2 w-full"></select>
-      </div>
-    </div>
+        const getSeason = (date) => {
+            const month = new Date(date).getMonth();
+            // Jun-Aug: haute saison, Dec-Jan: saison moyenne, autres: basse saison
+            if (month >= 5 && month <= 7) return 'haute';
+            if (month === 11 || month === 0) return 'moyenne';
+            return 'basse';
+        };
 
-    <div id="result" class="bg-gray-100 p-4 rounded-xl space-y-2"></div>
-  </div>
+        const isWeekend = (date) => {
+            const day = new Date(date).getDay();
+            return day === 5 || day === 6; // Vendredi, Samedi
+        };
 
-  <script>
-    const data = [
-      { id: 1, name: "Camping du Lac", pricePerNight: 35, accessFee: 8, reservationFee: 10, dogAllowed: true, extraPerson: 5, maxPeople: 6 },
-      { id: 2, name: "Parc Nature", pricePerNight: 45, accessFee: 10, reservationFee: 12, dogAllowed: false, extraPerson: 7, maxPeople: 4 }
-    ];
+        // ==================== PRICING ENGINE ====================
+        const calculateCost = (params) => {
+            const {
+                startDate,
+                endDate,
+                numAdults,
+                numChildren,
+                campground,
+                extras
+            } = params;
 
-    const campgroundSelect = document.getElementById('campground');
-    const resultDiv = document.getElementById('result');
+            let breakdown = {
+                nuits: 0,
+                hebergement: 0,
+                acces: 0,
+                reservation: 0,
+                extras: 0,
+                taxes: 0
+            };
 
-    data.forEach(c => {
-      const option = document.createElement('option');
-      option.value = c.id;
-      option.textContent = c.name;
-      campgroundSelect.appendChild(option);
-    });
+            if (!campground || !startDate || !endDate) {
+                return {
+                    total: 0,
+                    totalPerPerson: 0,
+                    totalPerNight: 0,
+                    breakdown,
+                    error: 'Paramètres incomplets'
+                };
+            }
 
-    function calculate() {
-      const people = Number(document.getElementById('people').value);
-      const nights = Number(document.getElementById('nights').value);
-      const dogs = Number(document.getElementById('dogs').value);
-      const selected = data.find(c => c.id === Number(campgroundSelect.value));
+            const nights = calculateNights(startDate, endDate);
+            const totalPersons = numAdults + numChildren;
 
-      if (!selected) return;
+            if (nights === 0) {
+                return {
+                    total: 0,
+                    totalPerPerson: 0,
+                    totalPerNight: 0,
+                    breakdown,
+                    error: 'Minimum 1 nuit requis'
+                };
+            }
 
-      let base = selected.pricePerNight * nights;
-      let access = selected.accessFee * people * nights;
-      let reservation = selected.reservationFee;
+            if (totalPersons === 0) {
+                return {
+                    total: 0,
+                    totalPerPerson: 0,
+                    totalPerNight: 0,
+                    breakdown,
+                    error: 'Minimum 1 personne requis'
+                };
+            }
 
-      let extraPeople = Math.max(0, people - 2) * selected.extraPerson * nights;
-      let dogCost = dogs * 5 * nights;
+            breakdown.nuits = nights;
 
-      let subtotal = base + access + reservation + extraPeople + dogCost;
-      let taxes = subtotal * 0.14975;
-      let total = subtotal + taxes;
+            // Calcul hébergement par nuit
+            let nightlyRate = 0;
+            let currentDate = new Date(startDate);
 
-      resultDiv.innerHTML = `
-        <div><strong>Total:</strong> $${total.toFixed(2)}</div>
-        <div><strong>Per person:</strong> $${(total/people).toFixed(2)}</div>
-        <div><strong>Per night:</strong> $${(total/nights).toFixed(2)}</div>
-        <hr />
-        <div>Base: $${base.toFixed(2)}</div>
-        <div>Access: $${access.toFixed(2)}</div>
-        <div>Reservation: $${reservation.toFixed(2)}</div>
-        <div>Extra people: $${extraPeople.toFixed(2)}</div>
-        <div>Dogs: $${dogCost.toFixed(2)}</div>
-        <div>Taxes: $${taxes.toFixed(2)}</div>
-      `;
-    }
+            while (currentDate < new Date(endDate)) {
+                const season = getSeason(currentDate.toISOString().split('T')[0]);
+                const weekend = isWeekend(currentDate.toISOString().split('T')[0]);
 
-    document.querySelectorAll('input, select').forEach(el => {
-      el.addEventListener('input', calculate);
-    });
+                let dayRate = 0;
 
-    calculate();
-  </script>
+                // Appliquer tarif selon saison et jour
+                if (weekend) {
+                    dayRate = campground.pricing[season].weekend || campground.pricing[season].base;
+                } else {
+                    dayRate = campground.pricing[season].base;
+                }
+
+                nightlyRate += dayRate;
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            breakdown.hebergement = nightlyRate;
+
+            // Frais d'accès
+            breakdown.acces = (campground.accessFee || 0) * totalPersons;
+
+            // Frais de réservation
+            breakdown.reservation = campground.reservationFee || 0;
+
+            // Extras
+            let extrasTotal = 0;
+            extras.forEach(extra => {
+                if (extra.selected && extra.quantity > 0) {
+                    const extraData = campground.extras.find(e => e.id === extra.id);
+                    if (extraData) {
+                        const multiplier = extraData.billedPer === 'night' ? nights : 1;
+                        extrasTotal += extraData.price * extra.quantity * multiplier;
+                    }
+                }
+            });
+
+            breakdown.extras = extrasTotal;
+
+            // Total avant taxes
+            let subtotal = breakdown.hebergement + breakdown.acces + breakdown.reservation + breakdown.extras;
+
+            // Taxes (TPS + TVQ au Québec)
+            const taxRate = 0.15; // 5% TPS + 9.975% TVQ ≈ 15%
+            breakdown.taxes = subtotal * taxRate;
+
+            const total = subtotal + breakdown.taxes;
+
+            return {
+                total: Math.round(total * 100) / 100,
+                totalPerPerson: totalPersons > 0 ? Math.round((total / totalPersons) * 100) / 100 : 0,
+                totalPerNight: nights > 0 ? Math.round((total / nights) * 100) / 100 : 0,
+                breakdown: {
+                    nuits: nights,
+                    hebergement: Math.round(breakdown.hebergement * 100) / 100,
+                    acces: Math.round(breakdown.acces * 100) / 100,
+                    reservation: Math.round(breakdown.reservation * 100) / 100,
+                    extras: Math.round(breakdown.extras * 100) / 100,
+                    taxes: Math.round(breakdown.taxes * 100) / 100
+                },
+                error: null
+            };
+        };
+
+        // ==================== DEFAULT DATA ====================
+        const DEFAULT_CAMPGROUNDS = [
+            {
+                id: 1,
+                name: 'Camping Mont-Tremblant',
+                region: 'Laurentides',
+                maxCapacity: 6,
+                dogsAllowed: true,
+                maxDogs: 2,
+                accessFee: 5,
+                reservationFee: 15,
+                types: ['Tente', 'VR', 'Prêt-à-camper'],
+                pricing: {
+                    basse: { base: 35, weekend: 40 },
+                    moyenne: { base: 45, weekend: 55 },
+                    haute: { base: 55, weekend: 65 }
+                },
+                extras: [
+                    { id: 1, name: 'Bois de chauffage', price: 15, billedPer: 'séjour' },
+                    { id: 2, name: 'Chien supplémentaire', price: 10, billedPer: 'nuit' },
+                    { id: 3, name: 'Canot', price: 40, billedPer: 'jour' }
+                ]
+            },
+            {
+                id: 2,
+                name: 'Camping Lac-Mégantic',
+                region: 'Estrie',
+                maxCapacity: 8,
+                dogsAllowed: true,
+                maxDogs: 3,
+                accessFee: 4,
+                reservationFee: 20,
+                types: ['Tente', 'VR'],
+                pricing: {
+                    basse: { base: 30, weekend: 38 },
+                    moyenne: { base: 42, weekend: 50 },
+                    haute: { base: 50, weekend: 60 }
+                },
+                extras: [
+                    { id: 1, name: 'Bois de chauffage', price: 12, billedPer: 'séjour' },
+                    { id: 2, name: 'Chien supplémentaire', price: 8, billedPer: 'nuit' },
+                    { id: 4, name: 'Kayak', price: 35, billedPer: 'jour' }
+                ]
+            },
+            {
+                id: 3,
+                name: 'Camping Gaspésie Bord-Mer',
+                region: 'Gaspésie',
+                maxCapacity: 5,
+                dogsAllowed: false,
+                maxDogs: 0,
+                accessFee: 6,
+                reservationFee: 25,
+                types: ['Tente', 'Prêt-à-camper'],
+                pricing: {
+                    basse: { base: 40, weekend: 48 },
+                    moyenne: { base: 50, weekend: 60 },
+                    haute: { base: 65, weekend: 75 }
+                },
+                extras: [
+                    { id: 1, name: 'Bois de chauffage', price: 18, billedPer: 'séjour' },
+                    { id: 5, name: 'Visite guidée', price: 25, billedPer: 'séjour' }
+                ]
+            },
+            {
+                id: 4,
+                name: 'Camping Outaouais Forêt',
+                region: 'Outaouais',
+                maxCapacity: 7,
+                dogsAllowed: true,
+                maxDogs: 2,
+                accessFee: 3,
+                reservationFee: 10,
+                types: ['Tente', 'VR', 'Prêt-à-camper'],
+                pricing: {
+                    basse: { base: 28, weekend: 35 },
+                    moyenne: { base: 40, weekend: 48 },
+                    haute: { base: 48, weekend: 58 }
+                },
+                extras: [
+                    { id: 1, name: 'Bois de chauffage', price: 14, billedPer: 'séjour' },
+                    { id: 2, name: 'Chien supplémentaire', price: 9, billedPer: 'nuit' },
+                    { id: 6, name: 'BBQ', price: 20, billedPer: 'séjour' }
+                ]
+            }
+        ];
+
+        // ==================== MAIN APP ====================
+        function CampgroundCalculator() {
+            const [activeTab, setActiveTab] = useState('calculator');
+            const [campgrounds, setCampgrounds] = useState(() => {
+                const saved = localStorage.getItem('campgrounds');
+                return saved ? JSON.parse(saved) : DEFAULT_CAMPGROUNDS;
+            });
+
+            // Sauvegarder les campgrounds
+            useEffect(() => {
+                localStorage.setItem('campgrounds', JSON.stringify(campgrounds));
+            }, [campgrounds]);
+
+            // État du calculateur
+            const [startDate, setStartDate] = useState('');
+            const [endDate, setEndDate] = useState('');
+            const [numAdults, setNumAdults] = useState(2);
+            const [numChildren, setNumChildren] = useState(0);
+            const [selectedCampground, setSelectedCampground] = useState(null);
+            const [accommodationType, setAccommodationType] = useState('Tente');
+            const [extras, setExtras] = useState([]);
+
+            // Initialiser extras quand campground change
+            useEffect(() => {
+                if (selectedCampground) {
+                    setExtras(
+                        selectedCampground.extras.map(e => ({
+                            id: e.id,
+                            selected: false,
+                            quantity: 0
+                        }))
+                    );
+                }
+            }, [selectedCampground]);
+
+            // Calcul du coût
+            const result = calculateCost({
+                startDate,
+                endDate,
+                numAdults,
+                numChildren,
+                campground: selectedCampground,
+                extras
+            });
+
+            // Gestion de l'admin
+            const [showAddModal, setShowAddModal] = useState(false);
+            const [editingCampground, setEditingCampground] = useState(null);
+
+            const handleDeleteCampground = (id) => {
+                if (confirm('Supprimer ce camping ?')) {
+                    setCampgrounds(campgrounds.filter(c => c.id !== id));
+                    if (selectedCampground?.id === id) {
+                        setSelectedCampground(null);
+                    }
+                }
+            };
+
+            const handleSaveCampground = (campground) => {
+                if (campground.id) {
+                    // Édition
+                    setCampgrounds(campgrounds.map(c => c.id === campground.id ? campground : c));
+                } else {
+                    // Ajout
+                    campground.id = Math.max(...campgrounds.map(c => c.id), 0) + 1;
+                    setCampgrounds([...campgrounds, campground]);
+                }
+                setShowAddModal(false);
+                setEditingCampground(null);
+            };
+
+            return (
+                <div className="app-container">
+                    <div className="header">
+                        <h1>⛺ CampCalc</h1>
+                        <p>Calculateur de camping au Québec</p>
+                    </div>
+
+                    <div className="tabs">
+                        <button
+                            className={`tab-btn ${activeTab === 'calculator' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('calculator')}
+                        >
+                            Calculateur
+                        </button>
+                        <button
+                            className={`tab-btn ${activeTab === 'admin' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('admin')}
+                        >
+                            Gestion des campings
+                        </button>
+                    </div>
+
+                    <div className="content">
+                        {activeTab === 'calculator' && (
+                            <CalculatorTab
+                                campgrounds={campgrounds}
+                                startDate={startDate}
+                                setStartDate={setStartDate}
+                                endDate={endDate}
+                                setEndDate={setEndDate}
+                                numAdults={numAdults}
+                                setNumAdults={setNumAdults}
+                                numChildren={numChildren}
+                                setNumChildren={setNumChildren}
+                                selectedCampground={selectedCampground}
+                                setSelectedCampground={setSelectedCampground}
+                                accommodationType={accommodationType}
+                                setAccommodationType={setAccommodationType}
+                                extras={extras}
+                                setExtras={setExtras}
+                                result={result}
+                            />
+                        )}
+
+                        {activeTab === 'admin' && (
+                            <AdminTab
+                                campgrounds={campgrounds}
+                                onDelete={handleDeleteCampground}
+                                onAddNew={() => {
+                                    setEditingCampground(null);
+                                    setShowAddModal(true);
+                                }}
+                                onEdit={(camp) => {
+                                    setEditingCampground(camp);
+                                    setShowAddModal(true);
+                                }}
+                            />
+                        )}
+                    </div>
+
+                    {showAddModal && (
+                        <CampgroundModal
+                            campground={editingCampground}
+                            onSave={handleSaveCampground}
+                            onClose={() => {
+                                setShowAddModal(false);
+                                setEditingCampground(null);
+                            }}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        // ==================== TAB: CALCULATOR ====================
+        function CalculatorTab({
+            campgrounds,
+            startDate,
+            setStartDate,
+            endDate,
+            setEndDate,
+            numAdults,
+            setNumAdults,
+            numChildren,
+            setNumChildren,
+            selectedCampground,
+            setSelectedCampground,
+            accommodationType,
+            setAccommodationType,
+            extras,
+            setExtras,
+            result
+        }) {
+            const handleExtraChange = (id, field, value) => {
+                setExtras(extras.map(e =>
+                    e.id === id ? { ...e, [field]: value } : e
+                ));
+            };
+
+            // Validation: chiens non permis
+            const dogsNotAllowed = selectedCampground && !selectedCampground.dogsAllowed;
+
+            return (
+                <div className="calculator">
+                    <div>
+                        <h2 style={{ marginBottom: '2rem', color: 'var(--pine)' }}>Paramètres du séjour</h2>
+
+                        {dogsNotAllowed && (
+                            <div className="error">
+                                ⚠️ Les chiens ne sont pas permis dans ce camping.
+                            </div>
+                        )}
+
+                        <div className="form-group">
+                            <label>Dates du séjour</label>
+                            <div className="form-row">
+                                <div>
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                    />
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--stone)', marginTop: '0.25rem' }}>Arrivée</p>
+                                </div>
+                                <div>
+                                    <input
+                                        type="date"
+                                        value={endDate}
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                    />
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--stone)', marginTop: '0.25rem' }}>Départ</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Nombre de personnes</label>
+                            <div className="form-row">
+                                <div>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={numAdults}
+                                        onChange={(e) => setNumAdults(Math.max(0, parseInt(e.target.value) || 0))}
+                                    />
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--stone)', marginTop: '0.25rem' }}>Adultes</p>
+                                </div>
+                                <div>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={numChildren}
+                                        onChange={(e) => setNumChildren(Math.max(0, parseInt(e.target.value) || 0))}
+                                    />
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--stone)', marginTop: '0.25rem' }}>Enfants</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Type d'hébergement</label>
+                            <select
+                                value={accommodationType}
+                                onChange={(e) => setAccommodationType(e.target.value)}
+                                disabled={!selectedCampground}
+                            >
+                                <option value="">Sélectionner un camping d'abord</option>
+                                {selectedCampground?.types.map(type => (
+                                    <option key={type} value={type}>{type}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Camping</label>
+                            <div className="campground-list">
+                                {campgrounds.map(camp => (
+                                    <div
+                                        key={camp.id}
+                                        className={`campground-card ${selectedCampground?.id === camp.id ? 'selected' : ''}`}
+                                        onClick={() => {
+                                            setSelectedCampground(camp);
+                                            setAccommodationType(camp.types[0]);
+                                        }}
+                                    >
+                                        <h4>{camp.name}</h4>
+                                        <p>{camp.region}</p>
+                                        <p>👥 Max: {camp.maxCapacity}</p>
+                                        <p>{camp.dogsAllowed ? '🐕 Chiens OK' : '🚫 Pas de chiens'}</p>
+                                        <p className="campground-price">
+                                            À partir de {formatCAD(Math.min(...Object.values(camp.pricing).map(s => s.base)))}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {selectedCampground && selectedCampground.extras.length > 0 && (
+                            <div className="extras-section">
+                                <label style={{ display: 'block', marginBottom: '1rem' }}>Extras optionnels</label>
+                                {selectedCampground.extras.map(extra => {
+                                    const extrasState = extras.find(e => e.id === extra.id) || { selected: false, quantity: 0 };
+                                    return (
+                                        <div key={extra.id} className="extra-item">
+                                            <label className="checkbox-label">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={extrasState.selected}
+                                                    onChange={(e) => handleExtraChange(extra.id, 'selected', e.target.checked)}
+                                                />
+                                                <span>
+                                                    <strong>{extra.name}</strong>
+                                                    <br />
+                                                    <small style={{ color: 'var(--stone)' }}>
+                                                        {formatCAD(extra.price)} par {extra.billedPer === 'night' ? 'nuit' : 'séjour'}
+                                                    </small>
+                                                </span>
+                                            </label>
+                                            {extrasState.selected && (
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    placeholder="Quantité"
+                                                    value={extrasState.quantity}
+                                                    onChange={(e) => handleExtraChange(extra.id, 'quantity', parseInt(e.target.value) || 0)}
+                                                    style={{ marginTop: '0.5rem', width: '100%' }}
+                                                />
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+
+                    <div>
+                        <div className="results">
+                            <h3 className="result-title">Résumé du coût</h3>
+
+                            {result.error && (
+                                <div className="error">{result.error}</div>
+                            )}
+
+                            {!result.error && result.total > 0 && (
+                                <>
+                                    <div className="price-main">{formatCAD(result.total)}</div>
+                                    <div className="price-label">Coût total du séjour</div>
+
+                                    <div className="stats-grid">
+                                        <div className="stat-card">
+                                            <div className="stat-label">Par personne</div>
+                                            <div className="stat-value">{formatCAD(result.totalPerPerson)}</div>
+                                        </div>
+                                        <div className="stat-card">
+                                            <div className="stat-label">Par nuit</div>
+                                            <div className="stat-value">{formatCAD(result.totalPerNight)}</div>
+                                        </div>
+                                        <div className="stat-card">
+                                            <div className="stat-label">Nuits</div>
+                                            <div className="stat-value">{result.breakdown.nuits}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="breakdown">
+                                        <h4 style={{ marginBottom: '1rem', color: 'var(--pine)' }}>Détail</h4>
+
+                                        <div className="breakdown-row">
+                                            <span className="breakdown-label">Hébergement ({result.breakdown.nuits} nuits)</span>
+                                            <span className="breakdown-value">{formatCAD(result.breakdown.hebergement)}</span>
+                                        </div>
+
+                                        {result.breakdown.acces > 0 && (
+                                            <div className="breakdown-row">
+                                                <span className="breakdown-label">Droit d'accès</span>
+                                                <span className="breakdown-value">{formatCAD(result.breakdown.acces)}</span>
+                                            </div>
+                                        )}
+
+                                        {result.breakdown.reservation > 0 && (
+                                            <div className="breakdown-row">
+                                                <span className="breakdown-label">Frais de réservation</span>
+                                                <span className="breakdown-value">{formatCAD(result.breakdown.reservation)}</span>
+                                            </div>
+                                        )}
+
+                                        {result.breakdown.extras > 0 && (
+                                            <div className="breakdown-row">
+                                                <span className="breakdown-label">Extras</span>
+                                                <span className="breakdown-value">{formatCAD(result.breakdown.extras)}</span>
+                                            </div>
+                                        )}
+
+                                        <div className="breakdown-row">
+                                            <span className="breakdown-label">Taxes (TPS/TVQ)</span>
+                                            <span className="breakdown-value">{formatCAD(result.breakdown.taxes)}</span>
+                                        </div>
+
+                                        <div className="breakdown-row total">
+                                            <span>TOTAL</span>
+                                            <span>{formatCAD(result.total)}</span>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+
+                            {result.total === 0 && !result.error && (
+                                <div className="info-text">
+                                    Remplissez tous les paramètres pour voir le prix.
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ==================== TAB: ADMIN ====================
+        function AdminTab({ campgrounds, onDelete, onAddNew, onEdit }) {
+            return (
+                <div className="admin-container">
+                    <div className="section-box">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h3 className="section-title" style={{ margin: 0, borderBottom: 'none', padding: 0 }}>
+                                Campings gérés
+                            </h3>
+                            <button className="btn btn-primary" onClick={onAddNew}>
+                                + Ajouter
+                            </button>
+                        </div>
+
+                        <div>
+                            {campgrounds.map(camp => (
+                                <div key={camp.id} className="campground-item">
+                                    <div>
+                                        <h5>{camp.name}</h5>
+                                        <p>{camp.region} • {camp.types.join(', ')}</p>
+                                        <p>Prix: {formatCAD(Math.min(...Object.values(camp.pricing).map(s => s.base)))} - {formatCAD(Math.max(...Object.values(camp.pricing).map(s => s.weekend)))}</p>
+                                    </div>
+                                    <div className="btn-group">
+                                        <button
+                                            className="btn btn-secondary btn-small"
+                                            onClick={() => onEdit(camp)}
+                                        >
+                                            Éditer
+                                        </button>
+                                        <button
+                                            className="btn btn-danger btn-small"
+                                            onClick={() => onDelete(camp.id)}
+                                        >
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="section-box">
+                        <h3 className="section-title">Statistiques</h3>
+
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <div className="stat-label">Campings disponibles</div>
+                                <div className="stat-value">{campgrounds.length}</div>
+                            </div>
+
+                            <div className="stat-card">
+                                <div className="stat-label">Chiens permis</div>
+                                <div className="stat-value">{campgrounds.filter(c => c.dogsAllowed).length}</div>
+                            </div>
+
+                            <div className="stat-card">
+                                <div className="stat-label">Prix moyen (base)</div>
+                                <div className="stat-value">
+                                    {formatCAD(
+                                        campgrounds.reduce((sum, c) => sum + Math.min(...Object.values(c.pricing).map(s => s.base)), 0) / campgrounds.length
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="stat-card">
+                                <div className="stat-label">Régions couvertes</div>
+                                <div className="stat-value">{new Set(campgrounds.map(c => c.region)).size}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ==================== MODAL: CAMPGROUND EDITOR ====================
+        function CampgroundModal({ campground, onSave, onClose }) {
+            const isNew = !campground;
+            const [form, setForm] = useState(campground || {
+                name: '',
+                region: '',
+                maxCapacity: 4,
+                dogsAllowed: true,
+                maxDogs: 2,
+                accessFee: 5,
+                reservationFee: 15,
+                types: ['Tente'],
+                pricing: {
+                    basse: { base: 30, weekend: 38 },
+                    moyenne: { base: 45, weekend: 55 },
+                    haute: { base: 55, weekend: 65 }
+                },
+                extras: []
+            });
+
+            const handleChange = (field, value) => {
+                setForm({ ...form, [field]: value });
+            };
+
+            const handlePricingChange = (season, level, value) => {
+                setForm({
+                    ...form,
+                    pricing: {
+                        ...form.pricing,
+                        [season]: {
+                            ...form.pricing[season],
+                            [level]: parseFloat(value) || 0
+                        }
+                    }
+                });
+            };
+
+            const handleSave = () => {
+                if (!form.name || !form.region) {
+                    alert('Nom et région requis');
+                    return;
+                }
+                onSave(form);
+            };
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <h2>{isNew ? 'Ajouter un camping' : 'Éditer ' + form.name}</h2>
+
+                        <div className="form-group">
+                            <label>Nom du camping</label>
+                            <input
+                                type="text"
+                                value={form.name}
+                                onChange={(e) => handleChange('name', e.target.value)}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Région</label>
+                            <input
+                                type="text"
+                                value={form.region}
+                                onChange={(e) => handleChange('region', e.target.value)}
+                                placeholder="ex: Laurentides, Gaspésie"
+                            />
+                        </div>
+
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Capacité maximale</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={form.maxCapacity}
+                                    onChange={(e) => handleChange('maxCapacity', parseInt(e.target.value))}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Chiens permis?</label>
+                                <select
+                                    value={form.dogsAllowed}
+                                    onChange={(e) => handleChange('dogsAllowed', e.target.value === 'true')}
+                                >
+                                    <option value="true">Oui</option>
+                                    <option value="false">Non</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {form.dogsAllowed && (
+                            <div className="form-group">
+                                <label>Nombre max de chiens</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={form.maxDogs}
+                                    onChange={(e) => handleChange('maxDogs', parseInt(e.target.value))}
+                                />
+                            </div>
+                        )}
+
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Droit d'accès (par personne)</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    value={form.accessFee}
+                                    onChange={(e) => handleChange('accessFee', parseFloat(e.target.value))}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Frais de réservation</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    value={form.reservationFee}
+                                    onChange={(e) => handleChange('reservationFee', parseFloat(e.target.value))}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Tarification par saison</label>
+                            {Object.entries(form.pricing).map(([season, prices]) => (
+                                <div key={season} style={{ marginBottom: '1rem', padding: '1rem', background: 'var(--bg)', borderRadius: '4px' }}>
+                                    <h5 style={{ color: 'var(--pine)', marginBottom: '0.5rem', textTransform: 'capitalize' }}>
+                                        {season === 'basse' ? 'Basse saison' : season === 'moyenne' ? 'Moyenne saison' : 'Haute saison'}
+                                    </h5>
+                                    <div className="form-row">
+                                        <div>
+                                            <label style={{ fontSize: '0.85rem' }}>Semaine</label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={prices.base}
+                                                onChange={(e) => handlePricingChange(season, 'base', e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: '0.85rem' }}>Fin de semaine</label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={prices.weekend}
+                                                onChange={(e) => handlePricingChange(season, 'weekend', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="modal-actions">
+                            <button className="btn btn-secondary" onClick={onClose}>
+                                Annuler
+                            </button>
+                            <button className="btn btn-primary" onClick={handleSave}>
+                                {isNew ? 'Créer' : 'Sauvegarder'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ==================== RENDER ====================
+        ReactDOM.createRoot(document.getElementById('root')).render(<CampgroundCalculator />);
+    </script>
 </body>
 </html>
