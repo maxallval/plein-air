@@ -495,9 +495,9 @@
             background: #ffffff;
             padding: 1.5rem;
             border-radius: 8px;
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
-            max-height: 80vh;
+            max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
@@ -507,6 +507,89 @@
             margin-bottom: 1.5rem;
             border-bottom: 1px solid #f0f0f0;
             padding-bottom: 1rem;
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid #f0f0f0;
+            margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+            padding: 0 1.5rem;
+        }
+
+        .modal-tab-btn {
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #999;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .modal-tab-btn:hover {
+            color: #000;
+        }
+
+        .modal-tab-btn.active {
+            color: #000;
+            border-bottom-color: #000;
+        }
+
+        .housing-item, .extra-item-edit {
+            padding: 1rem;
+            border: 1px solid #f0f0f0;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            background: #fafafa;
+        }
+
+        .housing-item label, .extra-item-edit label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #999;
+        }
+
+        .housing-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .remove-btn {
+            padding: 0.4rem 0.75rem;
+            background: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #ffcdd2;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.75rem;
+        }
+
+        .remove-btn:hover {
+            background: #ffcdd2;
+        }
+
+        .add-btn {
+            padding: 0.7rem 1rem;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .add-btn:hover {
+            background: #c8e6c9;
         }
 
         .modal-form-group {
@@ -856,6 +939,7 @@
             const [extras, setExtras] = useState([]);
             const [editingCampground, setEditingCampground] = useState(null);
             const [showModal, setShowModal] = useState(false);
+            const [modalTab, setModalTab] = useState('info');
 
             const saveCampgrounds = (updated) => {
                 setCampgrounds(updated);
@@ -884,6 +968,52 @@
                 if (!camp.region?.trim()) errors.region = 'Région obligatoire';
                 if (camp.accessFee < 0 || camp.accessFeeAdult < 0) errors.accessFee = 'Doit être ≥ 0';
                 return errors;
+            };
+
+            const addHousingType = () => {
+                const newId = `housing-${Date.now()}`;
+                setEditingCampground({
+                    ...editingCampground,
+                    accommodationTypes: {
+                        ...editingCampground.accommodationTypes,
+                        [newId]: {
+                            label: 'Nouveau type',
+                            maxCapacity: 4,
+                            pricing: {
+                                basse: { weekday: 0, weekend: 0, minNights: 1, maxNights: 7 },
+                                haute: { weekday: 0, weekend: 0, minNights: 1, maxNights: 7 }
+                            }
+                        }
+                    }
+                });
+            };
+
+            const removeHousingType = (typeId) => {
+                const { [typeId]: _, ...rest } = editingCampground.accommodationTypes;
+                setEditingCampground({
+                    ...editingCampground,
+                    accommodationTypes: rest
+                });
+            };
+
+            const addExtra = () => {
+                const newExtra = {
+                    id: Date.now(),
+                    name: 'Nouvel extra',
+                    price: 0,
+                    billedPer: 'jour'
+                };
+                setEditingCampground({
+                    ...editingCampground,
+                    extras: [...(editingCampground.extras || []), newExtra]
+                });
+            };
+
+            const removeExtra = (extraId) => {
+                setEditingCampground({
+                    ...editingCampground,
+                    extras: editingCampground.extras.filter(e => e.id !== extraId)
+                });
             };
 
             const saveEditedCampground = () => {
@@ -1147,8 +1277,14 @@
                         {showModal && editingCampground && (
                             <div className="modal-overlay" onClick={() => setShowModal(false)}>
                                 <div className="modal" onClick={(e) => e.stopPropagation()}>
-                                    <h2>{campgrounds.find(c => c.id === editingCampground.id) ? 'Éditer camping' : 'Nouveau camping'}</h2>
+                                    <h2>{campgrounds.find(c => c.id === editingCampground.id) ? '✏️ Éditer camping' : '➕ Nouveau camping'}</h2>
                                     
+                                    <div className="modal-tabs">
+                                        <button className={`modal-tab-btn ${modalTab === 'info' ? 'active' : ''}`} onClick={() => setModalTab('info')}>Infos</button>
+                                        <button className={`modal-tab-btn ${modalTab === 'housing' ? 'active' : ''}`} onClick={() => setModalTab('housing')}>Hébergements</button>
+                                        <button className={`modal-tab-btn ${modalTab === 'extras' ? 'active' : ''}`} onClick={() => setModalTab('extras')}>Extras</button>
+                                    </div>
+
                                     {(() => {
                                         const errors = validateCampground(editingCampground);
                                         return Object.keys(errors).length > 0 ? (
@@ -1158,53 +1294,274 @@
                                         ) : null;
                                     })()}
 
-                                    <div className="modal-form-group">
-                                        <label>Nom *</label>
-                                        <input 
-                                            type="text" 
-                                            value={editingCampground.name} 
-                                            onChange={(e) => setEditingCampground({...editingCampground, name: e.target.value})} 
-                                            placeholder="Ex: Camping du Lac"
-                                            className={!editingCampground.name?.trim() && editingCampground.name !== undefined ? 'form-error' : ''}
-                                            autoFocus
-                                        />
-                                        {!editingCampground.name?.trim() && editingCampground.name !== undefined && (
-                                            <div className="error-message">Nom obligatoire</div>
-                                        )}
-                                    </div>
+                                    {/* TAB INFOS */}
+                                    {modalTab === 'info' && (
+                                        <>
+                                            <div className="modal-form-group">
+                                                <label>Nom *</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={editingCampground.name} 
+                                                    onChange={(e) => setEditingCampground({...editingCampground, name: e.target.value})} 
+                                                    placeholder="Ex: Camping du Lac"
+                                                    className={!editingCampground.name?.trim() && editingCampground.name !== undefined ? 'form-error' : ''}
+                                                    autoFocus
+                                                />
+                                                {!editingCampground.name?.trim() && editingCampground.name !== undefined && (
+                                                    <div className="error-message">Nom obligatoire</div>
+                                                )}
+                                            </div>
 
-                                    <div className="modal-form-group">
-                                        <label>Région *</label>
-                                        <input 
-                                            type="text" 
-                                            value={editingCampground.region} 
-                                            onChange={(e) => setEditingCampground({...editingCampground, region: e.target.value})} 
-                                            placeholder="Ex: Laurentides"
-                                            className={!editingCampground.region?.trim() && editingCampground.region !== undefined ? 'form-error' : ''}
-                                        />
-                                        {!editingCampground.region?.trim() && editingCampground.region !== undefined && (
-                                            <div className="error-message">Région obligatoire</div>
-                                        )}
-                                    </div>
+                                            <div className="modal-form-group">
+                                                <label>Région *</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={editingCampground.region} 
+                                                    onChange={(e) => setEditingCampground({...editingCampground, region: e.target.value})} 
+                                                    placeholder="Ex: Laurentides"
+                                                    className={!editingCampground.region?.trim() && editingCampground.region !== undefined ? 'form-error' : ''}
+                                                />
+                                                {!editingCampground.region?.trim() && editingCampground.region !== undefined && (
+                                                    <div className="error-message">Région obligatoire</div>
+                                                )}
+                                            </div>
 
-                                    <div className="modal-form-group">
-                                        <label>Frais d'accès par personne</label>
-                                        <input 
-                                            type="number" 
-                                            step="0.01" 
-                                            min="0"
-                                            value={editingCampground.accessFee || editingCampground.accessFeeAdult || 0} 
-                                            onChange={(e) => {
-                                                const val = parseFloat(e.target.value) || 0;
-                                                setEditingCampground({...editingCampground, accessFee: val, accessFeeAdult: val});
-                                            }} 
-                                            placeholder="0.00"
-                                            className={(editingCampground.accessFee < 0 || editingCampground.accessFeeAdult < 0) ? 'form-error' : ''}
-                                        />
-                                        {(editingCampground.accessFee < 0 || editingCampground.accessFeeAdult < 0) && (
-                                            <div className="error-message">Doit être ≥ 0</div>
-                                        )}
-                                    </div>
+                                            <div className="modal-form-group">
+                                                <label>Frais d'accès par personne</label>
+                                                <input 
+                                                    type="number" 
+                                                    step="0.01" 
+                                                    min="0"
+                                                    value={editingCampground.accessFee || editingCampground.accessFeeAdult || 0} 
+                                                    onChange={(e) => {
+                                                        const val = parseFloat(e.target.value) || 0;
+                                                        setEditingCampground({...editingCampground, accessFee: val, accessFeeAdult: val});
+                                                    }} 
+                                                    placeholder="0.00"
+                                                    className={(editingCampground.accessFee < 0 || editingCampground.accessFeeAdult < 0) ? 'form-error' : ''}
+                                                />
+                                            </div>
+
+                                            <div className="modal-form-group">
+                                                <label>Capacité max</label>
+                                                <input 
+                                                    type="number" 
+                                                    min="1"
+                                                    value={editingCampground.maxCapacity || 8}
+                                                    onChange={(e) => setEditingCampground({...editingCampground, maxCapacity: parseInt(e.target.value) || 8})}
+                                                />
+                                            </div>
+
+                                            <div className="modal-form-group">
+                                                <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={editingCampground.dogsAllowed || false}
+                                                        onChange={(e) => setEditingCampground({...editingCampground, dogsAllowed: e.target.checked})}
+                                                        style={{width: '16px', height: '16px', cursor: 'pointer'}}
+                                                    />
+                                                    Chiens autorisés
+                                                </label>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {/* TAB HÉBERGEMENTS */}
+                                    {modalTab === 'housing' && (
+                                        <>
+                                            <button className="add-btn" onClick={addHousingType}>+ Ajouter type d'hébergement</button>
+                                            {Object.entries(editingCampground.accommodationTypes || {}).map(([typeId, type]) => (
+                                                <div key={typeId} className="housing-item">
+                                                    <div className="modal-form-group">
+                                                        <label>Nom du type</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={type.label}
+                                                            onChange={(e) => setEditingCampground({
+                                                                ...editingCampground,
+                                                                accommodationTypes: {
+                                                                    ...editingCampground.accommodationTypes,
+                                                                    [typeId]: {...type, label: e.target.value}
+                                                                }
+                                                            })}
+                                                            placeholder="Ex: 1 tente"
+                                                        />
+                                                    </div>
+
+                                                    <div className="modal-form-group">
+                                                        <label>Capacité max</label>
+                                                        <input 
+                                                            type="number" 
+                                                            min="1"
+                                                            value={type.maxCapacity || 4}
+                                                            onChange={(e) => setEditingCampground({
+                                                                ...editingCampground,
+                                                                accommodationTypes: {
+                                                                    ...editingCampground.accommodationTypes,
+                                                                    [typeId]: {...type, maxCapacity: parseInt(e.target.value) || 4}
+                                                                }
+                                                            })}
+                                                        />
+                                                    </div>
+
+                                                    <label style={{marginTop: '0.75rem', display: 'block', fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase'}}>Basse saison</label>
+                                                    <div className="housing-row">
+                                                        <div className="modal-form-group" style={{marginBottom: 0}}>
+                                                            <label>Semaine</label>
+                                                            <input 
+                                                                type="number" 
+                                                                step="0.01"
+                                                                min="0"
+                                                                value={type.pricing?.basse?.weekday || 0}
+                                                                onChange={(e) => setEditingCampground({
+                                                                    ...editingCampground,
+                                                                    accommodationTypes: {
+                                                                        ...editingCampground.accommodationTypes,
+                                                                        [typeId]: {
+                                                                            ...type,
+                                                                            pricing: {
+                                                                                ...type.pricing,
+                                                                                basse: {...type.pricing.basse, weekday: parseFloat(e.target.value) || 0}
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                })}
+                                                            />
+                                                        </div>
+                                                        <div className="modal-form-group" style={{marginBottom: 0}}>
+                                                            <label>Weekend</label>
+                                                            <input 
+                                                                type="number" 
+                                                                step="0.01"
+                                                                min="0"
+                                                                value={type.pricing?.basse?.weekend || 0}
+                                                                onChange={(e) => setEditingCampground({
+                                                                    ...editingCampground,
+                                                                    accommodationTypes: {
+                                                                        ...editingCampground.accommodationTypes,
+                                                                        [typeId]: {
+                                                                            ...type,
+                                                                            pricing: {
+                                                                                ...type.pricing,
+                                                                                basse: {...type.pricing.basse, weekend: parseFloat(e.target.value) || 0}
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                })}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <label style={{marginTop: '0.75rem', display: 'block', fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase'}}>Haute saison (juin-août)</label>
+                                                    <div className="housing-row">
+                                                        <div className="modal-form-group" style={{marginBottom: 0}}>
+                                                            <label>Semaine</label>
+                                                            <input 
+                                                                type="number" 
+                                                                step="0.01"
+                                                                min="0"
+                                                                value={type.pricing?.haute?.weekday || 0}
+                                                                onChange={(e) => setEditingCampground({
+                                                                    ...editingCampground,
+                                                                    accommodationTypes: {
+                                                                        ...editingCampground.accommodationTypes,
+                                                                        [typeId]: {
+                                                                            ...type,
+                                                                            pricing: {
+                                                                                ...type.pricing,
+                                                                                haute: {...type.pricing.haute, weekday: parseFloat(e.target.value) || 0}
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                })}
+                                                            />
+                                                        </div>
+                                                        <div className="modal-form-group" style={{marginBottom: 0}}>
+                                                            <label>Weekend</label>
+                                                            <input 
+                                                                type="number" 
+                                                                step="0.01"
+                                                                min="0"
+                                                                value={type.pricing?.haute?.weekend || 0}
+                                                                onChange={(e) => setEditingCampground({
+                                                                    ...editingCampground,
+                                                                    accommodationTypes: {
+                                                                        ...editingCampground.accommodationTypes,
+                                                                        [typeId]: {
+                                                                            ...type,
+                                                                            pricing: {
+                                                                                ...type.pricing,
+                                                                                haute: {...type.pricing.haute, weekend: parseFloat(e.target.value) || 0}
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                })}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <button className="remove-btn" onClick={() => removeHousingType(typeId)}>✕ Supprimer</button>
+                                                </div>
+                                            ))}
+                                        </>
+                                    )}
+
+                                    {/* TAB EXTRAS */}
+                                    {modalTab === 'extras' && (
+                                        <>
+                                            <button className="add-btn" onClick={addExtra}>+ Ajouter extra</button>
+                                            {editingCampground.extras?.map((extra, idx) => (
+                                                <div key={extra.id} className="extra-item-edit">
+                                                    <div className="modal-form-group">
+                                                        <label>Nom</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={extra.name}
+                                                            onChange={(e) => {
+                                                                const updated = [...editingCampground.extras];
+                                                                updated[idx].name = e.target.value;
+                                                                setEditingCampground({...editingCampground, extras: updated});
+                                                            }}
+                                                            placeholder="Ex: Canot 2 bancs"
+                                                        />
+                                                    </div>
+
+                                                    <div className="housing-row">
+                                                        <div className="modal-form-group" style={{marginBottom: 0}}>
+                                                            <label>Prix</label>
+                                                            <input 
+                                                                type="number" 
+                                                                step="0.01"
+                                                                min="0"
+                                                                value={extra.price}
+                                                                onChange={(e) => {
+                                                                    const updated = [...editingCampground.extras];
+                                                                    updated[idx].price = parseFloat(e.target.value) || 0;
+                                                                    setEditingCampground({...editingCampground, extras: updated});
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div className="modal-form-group" style={{marginBottom: 0}}>
+                                                            <label>Facturé par</label>
+                                                            <select 
+                                                                value={extra.billedPer}
+                                                                onChange={(e) => {
+                                                                    const updated = [...editingCampground.extras];
+                                                                    updated[idx].billedPer = e.target.value;
+                                                                    setEditingCampground({...editingCampground, extras: updated});
+                                                                }}
+                                                            >
+                                                                <option value="jour">Jour</option>
+                                                                <option value="séjour">Séjour</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <button className="remove-btn" onClick={() => removeExtra(extra.id)}>✕ Supprimer</button>
+                                                </div>
+                                            ))}
+                                        </>
+                                    )}
 
                                     <div className="modal-actions">
                                         <div style={{flex: 1}}>
