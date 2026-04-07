@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Extras +/-</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: 20px auto; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 10px 0; }
+        button { padding: 8px 12px; margin: 0 5px; cursor: pointer; border: none; border-radius: 4px; }
+        .btn-minus { background: #7a9b6f; color: white; }
+        .btn-plus { background: #2d5016; color: white; }
+        .qty { font-weight: bold; min-width: 30px; display: inline-block; text-align: center; }
+        .extra { padding: 10px; background: #f5f5f5; margin: 10px 0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .total { font-size: 24px; font-weight: bold; color: #c67c4e; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function TestExtras() {
+            const [extras, setExtras] = useState([
+                { id: 1, selected: false, quantity: 0 },
+                { id: 2, selected: false, quantity: 0 },
+                { id: 3, selected: false, quantity: 0 },
+            ]);
+
+            const EXTRAS_DATA = {
+                1: { name: 'Canot 2 bancs', price: 43, billedPer: 'jour' },
+                2: { name: 'Kayak de mer solo', price: 38, billedPer: 'jour' },
+                3: { name: 'Surf à pagaie', price: 33, billedPer: 'jour' }
+            };
+
+            const handlePlus = (id) => {
+                console.log('PLUS clicked for id:', id);
+                setExtras(extras.map(e => 
+                    e.id === id 
+                        ? { ...e, quantity: e.quantity + 1, selected: true }
+                        : e
+                ));
+            };
+
+            const handleMinus = (id) => {
+                console.log('MINUS clicked for id:', id);
+                setExtras(extras.map(e =>
+                    e.id === id && e.quantity > 0
+                        ? { ...e, quantity: e.quantity - 1 }
+                        : e
+                ));
+            };
+
+            const totalExtra = extras.reduce((sum, e) => {
+                const data = EXTRAS_DATA[e.id];
+                return sum + (data.price * e.quantity);
+            }, 0);
+
+            return (
+                <div>
+                    <div className="card">
+                        <h1>Test Boutons Extras +/-</h1>
+                        
+                        {extras.map(extra => {
+                            const data = EXTRAS_DATA[extra.id];
+                            return (
+                                <div key={extra.id} className="extra">
+                                    <div>
+                                        <strong>{data.name}</strong><br/>
+                                        <small>${data.price}/jour</small>
+                                    </div>
+                                    <div>
+                                        <button className="btn-minus" onClick={() => handleMinus(extra.id)}>−</button>
+                                        <span className="qty">{extra.quantity}</span>
+                                        <button className="btn-plus" onClick={() => handlePlus(extra.id)}>+</button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        
+                        <div className="total">
+                            Total extras: ${totalExtra.toFixed(2)}
+                        </div>
+                        
+                        <p style={{marginTop: '20px', fontSize: '12px', color: '#666'}}>
+                            Console (F12): Regardez les "PLUS/MINUS clicked" messages quand vous cliquez les boutons
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<TestExtras />);
+    </script>
+</body>
+</html>
