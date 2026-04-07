@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CampCalc - Calculateur de Camping Québec</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <title>CampCalc - Calculateur de Camping</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -16,53 +16,64 @@
         }
 
         :root {
-            --pine: #1a3a2a;
-            --forest: #2d5016;
-            --sage: #7a9b6f;
-            --burnt: #d97706;
-            --cream: #f5f3ef;
-            --stone: #5a5450;
-            --text-dark: #1a1a1a;
-            --text-light: #6b6b6b;
-            --border: #e0d9d0;
-            --bg-light: #faf9f7;
-            --bg-card: #ffffff;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
-            --shadow-md: 0 8px 20px rgba(0,0,0,0.12);
-            --shadow-lg: 0 16px 40px rgba(0,0,0,0.15);
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #00d4ff;
+            --accent-warm: #ff6b6b;
+            --accent-green: #51cf66;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --bg: #0f0f1e;
+            --bg-card: #1a1a2e;
+            --border: #2a2a4e;
+            --shadow: 0 20px 60px rgba(0, 212, 255, 0.1);
+            --shadow-hover: 0 30px 80px rgba(0, 212, 255, 0.2);
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            color: var(--text-dark);
-            background: linear-gradient(135deg, var(--bg-light) 0%, #f0ede7 100%);
+            font-family: 'Sora', -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, var(--secondary) 100%);
+            color: var(--text-primary);
             line-height: 1.6;
-            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         h1, h2, h3, h4 {
-            font-family: 'Playfair Display', 'Georgia', serif;
             font-weight: 700;
             letter-spacing: -0.02em;
-            color: var(--text-dark);
         }
 
-        h1 { font-size: 2.5rem; }
-        h2 { font-size: 1.8rem; }
-        h3 { font-size: 1.4rem; }
-        h4 { font-size: 1.1rem; }
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-warm) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-        .app-container {
+        h2 {
+            font-size: 1.8rem;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+        }
+
+        .container {
             display: grid;
             grid-template-columns: 1fr;
             min-height: 100vh;
         }
 
         .header {
-            background: linear-gradient(135deg, var(--pine) 0%, var(--forest) 100%);
-            color: white;
             padding: 3rem 2rem;
-            box-shadow: var(--shadow-md);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
+            border-bottom: 1px solid var(--border);
             position: relative;
             overflow: hidden;
         }
@@ -70,39 +81,41 @@
         .header::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            top: -40%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.15) 0%, transparent 70%);
             border-radius: 50%;
         }
 
-        .header h1 {
-            font-size: 2.8rem;
-            margin-bottom: 0.5rem;
+        .header-content {
             position: relative;
             z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            margin-bottom: 0.5rem;
+            font-size: 3rem;
         }
 
         .header p {
-            opacity: 0.95;
+            color: var(--text-secondary);
             font-size: 1rem;
             letter-spacing: 0.5px;
-            position: relative;
-            z-index: 1;
         }
 
         .tabs {
             display: flex;
             gap: 0;
-            border-bottom: 2px solid var(--border);
-            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
             padding: 0 2rem;
             position: sticky;
             top: 0;
-            z-index: 10;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            z-index: 100;
         }
 
         .tab-btn {
@@ -111,38 +124,36 @@
             border: none;
             background: none;
             cursor: pointer;
-            font-size: 0.95rem;
-            color: var(--text-light);
+            color: var(--text-secondary);
             border-bottom: 3px solid transparent;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            position: relative;
+            letter-spacing: 0.08em;
+            font-size: 0.85rem;
         }
 
         .tab-btn:hover {
-            color: var(--forest);
-            background: rgba(45, 80, 22, 0.04);
+            color: var(--accent);
         }
 
         .tab-btn.active {
-            color: var(--forest);
-            border-bottom-color: var(--burnt);
+            color: var(--accent);
+            border-bottom-color: var(--accent);
         }
 
         .content {
-            padding: 2rem;
-            max-width: 1200px;
+            padding: 3rem 2rem;
+            max-width: 1400px;
             margin: 0 auto;
             width: 100%;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -150,11 +161,11 @@
             }
         }
 
-        /* CALCULATOR SECTION */
         .calculator {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            gap: 2.5rem;
+            align-items: start;
         }
 
         @media (max-width: 1024px) {
@@ -163,54 +174,58 @@
             }
         }
 
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
         .form-group {
-            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
         .form-group label {
-            display: block;
-            margin-bottom: 0.75rem;
             font-weight: 600;
-            color: var(--forest);
-            font-size: 0.95rem;
+            color: var(--accent);
+            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.08em;
         }
 
         .form-group input,
         .form-group select {
-            width: 100%;
-            padding: 1rem;
+            padding: 1.2rem;
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            color: var(--text-primary);
             font-size: 1rem;
             font-family: inherit;
-            background: var(--bg-card);
-            color: var(--text-dark);
             transition: all 0.3s ease;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: var(--forest);
-            background: var(--bg-card);
-            box-shadow: 0 0 0 4px rgba(45, 80, 22, 0.1), inset 0 0 0 1px var(--forest);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
         }
 
         .form-group input::placeholder {
-            color: var(--text-light);
+            color: var(--text-secondary);
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
         .campground-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: 1fr;
             gap: 1rem;
             margin-top: 1rem;
         }
@@ -220,181 +235,202 @@
             border: 2px solid var(--border);
             border-radius: 12px;
             cursor: pointer;
+            background: var(--bg-card);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: var(--bg-card);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .campground-card:hover {
-            border-color: var(--burnt);
-            background: var(--bg-card);
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .campground-card.selected {
-            border-color: var(--forest);
-            background: linear-gradient(135deg, rgba(45, 80, 22, 0.05) 0%, rgba(122, 155, 111, 0.05) 100%);
-            box-shadow: var(--shadow-md), 0 0 0 3px rgba(45, 80, 22, 0.1);
-        }
-
-        .campground-card h4 {
-            margin-bottom: 0.75rem;
-            color: var(--forest);
-            font-size: 1.2rem;
-        }
-
-        .campground-card p {
-            font-size: 0.9rem;
-            color: var(--text-light);
-            margin-bottom: 0.3rem;
-        }
-
-        .campground-price {
-            color: var(--burnt);
-            font-weight: 700;
-            margin-top: 1rem;
-            font-size: 1.1rem;
-        }
-
-        /* RESULTS SECTION */
-        .results {
-            background: linear-gradient(135deg, var(--bg-card) 0%, #fcfbf9 100%);
-            padding: 2.5rem;
-            border-radius: 16px;
-            border-left: 6px solid var(--burnt);
-            position: sticky;
-            top: 100px;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .result-title {
-            color: var(--forest);
-            margin-bottom: 1.5rem;
-            font-size: 1.3rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-
-        .price-main {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: var(--burnt);
-            margin-bottom: 0.75rem;
-            line-height: 1;
-            font-family: 'Playfair Display', serif;
-        }
-
-        .price-label {
-            color: var(--text-light);
-            font-size: 0.95rem;
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-
-        .breakdown {
-            border-top: 2px solid var(--border);
-            padding-top: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .breakdown-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-        }
-
-        .breakdown-row.total {
-            font-weight: 700;
-            color: var(--forest);
-            border-top: 2px solid var(--border);
-            padding-top: 1.25rem;
-            margin-top: 1.25rem;
-            font-size: 1.1rem;
-        }
-
-        .breakdown-label {
-            color: var(--text-light);
-        }
-
-        .breakdown-value {
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-
-        .error {
-            padding: 1rem;
-            background: rgba(217, 119, 6, 0.1);
-            border-left: 4px solid var(--warning);
-            border-radius: 4px;
-            color: var(--warning);
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .success {
-            padding: 1rem;
-            background: rgba(107, 158, 90, 0.1);
-            border-left: 4px solid var(--success);
-            border-radius: 4px;
-            color: var(--success);
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-
-        /* ADMIN SECTION */
-        .admin-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        @media (max-width: 1024px) {
-            .admin-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .section-box {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .section-title {
-            color: var(--pine);
-            margin-bottom: 1.5rem;
-            font-size: 1.2rem;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 1rem;
-        }
-
-        .campground-item {
-            padding: 1rem;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            margin-bottom: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .campground-item h5 {
-            color: var(--pine);
+        .campground-card:hover {
+            border-color: var(--accent);
+            transform: translateX(8px);
+            box-shadow: var(--shadow);
+        }
+
+        .campground-card.selected {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 212, 255, 0.05) 100%);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+
+        .campground-card h4 {
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .campground-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
             margin-bottom: 0.25rem;
         }
 
-        .campground-item p {
+        .campground-price {
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-warm);
+            font-weight: 700;
+            font-size: 1.2rem;
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .extras-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .extra-item {
+            padding: 1.2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .extra-item:hover {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
+        }
+
+        .extra-info h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .extra-info p {
+            color: var(--text-secondary);
             font-size: 0.85rem;
-            color: var(--stone);
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--accent);
+            color: var(--primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .qty-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .qty-display {
+            font-family: 'Space Mono', monospace;
+            min-width: 30px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .results-box {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0, 212, 255, 0.05) 100%);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 100px;
+        }
+
+        .result-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.75rem;
+        }
+
+        .price-display {
+            font-family: 'Space Mono', monospace;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-warm) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+            line-height: 1;
+        }
+
+        .breakdown-table {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .breakdown-row.total {
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+            margin-top: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .breakdown-label {
+            color: var(--text-secondary);
+        }
+
+        .breakdown-value {
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .breakdown-row.total .breakdown-value {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .error {
+            padding: 1rem;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid var(--accent-warm);
+            border-radius: 8px;
+            color: var(--accent-warm);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .info-text {
+            padding: 1.5rem;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-align: center;
+            font-size: 0.95rem;
         }
 
         .btn {
-            padding: 1rem 1.75rem;
+            padding: 1rem 2rem;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -402,69 +438,43 @@
             text-transform: uppercase;
             letter-spacing: 0.06em;
             font-size: 0.85rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             font-family: inherit;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:active::before {
-            width: 300px;
-            height: 300px;
         }
 
         .btn-primary {
-            background: var(--forest);
-            color: white;
-            box-shadow: 0 4px 12px rgba(45, 80, 22, 0.2);
+            background: linear-gradient(90deg, var(--accent) 0%, #00b8cc 100%);
+            color: var(--primary);
         }
 
         .btn-primary:hover {
-            background: var(--pine);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(45, 80, 22, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
         }
 
         .btn-secondary {
-            background: var(--sage);
-            color: white;
-            box-shadow: 0 4px 12px rgba(122, 155, 111, 0.2);
+            background: var(--bg-card);
+            color: var(--accent);
+            border: 2px solid var(--border);
         }
 
         .btn-secondary:hover {
-            background: #6a8a5f;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(122, 155, 111, 0.3);
+            border-color: var(--accent);
         }
 
         .btn-danger {
-            background: var(--burnt);
+            background: var(--accent-warm);
             color: white;
-            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
         }
 
         .btn-danger:hover {
-            background: #b85f00;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
         }
 
         .btn-small {
-            padding: 0.65rem 1.2rem;
-            font-size: 0.8rem;
+            padding: 0.6rem 1rem;
+            font-size: 0.75rem;
         }
 
         .btn:disabled {
@@ -473,47 +483,80 @@
             transform: none !important;
         }
 
-        .btn-group {
-            display: flex;
-            gap: 0.5rem;
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
         }
 
-        .extras-section {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
+        @media (max-width: 1024px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .extra-item {
-            background: var(--bg);
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
+        .card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
             border: 1px solid var(--border);
         }
 
-        .checkbox-label {
+        .card h3 {
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .campground-item {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
+        }
+
+        .campground-item h4 {
+            color: var(--accent);
             margin-bottom: 0.5rem;
         }
 
-        .checkbox-label input {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: var(--pine);
+        .campground-item p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
         }
 
-        .info-text {
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(81, 207, 102, 0.05) 100%);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .stat-card .label {
+            color: var(--text-secondary);
             font-size: 0.85rem;
-            color: var(--stone);
-            margin-top: 0.5rem;
-            padding: 0.75rem;
-            background: rgba(45, 80, 22, 0.05);
-            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-card .value {
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
         }
 
         .modal-overlay {
@@ -522,28 +565,29 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 100;
-            animation: fadeIn 0.2s;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
         }
 
         .modal {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
+            background: var(--bg-card);
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
             max-width: 600px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
 
         .modal h2 {
-            margin-bottom: 1.5rem;
-            color: var(--pine);
+            margin-bottom: 2rem;
+            color: var(--accent);
         }
 
         .modal-actions {
@@ -551,72 +595,6 @@
             gap: 1rem;
             margin-top: 2rem;
             justify-content: flex-end;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, rgba(45, 80, 22, 0.08) 0%, rgba(122, 155, 111, 0.08) 100%);
-            padding: 1.75rem;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .stat-label {
-            color: var(--text-light);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 0.75rem;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--forest);
-            font-family: 'Playfair Display', serif;
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 1.5rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .content {
-                padding: 1rem;
-            }
-
-            .tabs {
-                padding: 0 1rem;
-            }
-
-            .tab-btn {
-                padding: 1rem;
-                font-size: 0.75rem;
-            }
-
-            .calculator {
-                grid-template-columns: 1fr;
-            }
-
-            .results {
-                position: static;
-            }
         }
     </style>
 </head>
@@ -626,7 +604,6 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // ==================== UTILITIES ====================
         const formatCAD = (value) => {
             return new Intl.NumberFormat('fr-CA', {
                 style: 'currency',
@@ -643,172 +620,68 @@
 
         const getSeason = (date) => {
             const month = new Date(date).getMonth();
-            // Jun-Aug: haute saison, autres: basse saison
             if (month >= 5 && month <= 7) return 'haute';
             return 'basse';
         };
 
         const isWeekend = (date) => {
             const day = new Date(date).getDay();
-            return day === 5 || day === 6; // Vendredi, Samedi
+            return day === 5 || day === 6;
         };
 
-        // ==================== PRICING ENGINE ====================
         const calculateCost = (params) => {
-            const {
-                startDate,
-                endDate,
-                numAdults,
-                numChildren,
-                campground,
-                accommodationType,
-                extras
-            } = params;
+            const { startDate, endDate, numAdults, numChildren, campground, accommodationType, extras } = params;
 
-            let breakdown = {
-                nuits: 0,
-                hebergement: 0,
-                acces: 0,
-                reservation: 0,
-                extras: 0,
-                taxes: 0
-            };
+            let breakdown = { nuits: 0, hebergement: 0, acces: 0, reservation: 0, extras: 0, taxes: 0 };
 
-            if (!campground || !startDate || !endDate) {
-                return {
-                    total: 0,
-                    totalPerPerson: 0,
-                    totalPerNight: 0,
-                    breakdown,
-                    error: 'Sélectionnez un camping et des dates'
-                };
-            }
-
-            if (!accommodationType) {
-                return {
-                    total: 0,
-                    totalPerPerson: 0,
-                    totalPerNight: 0,
-                    breakdown,
-                    error: 'Sélectionnez un type d\'hébergement'
-                };
+            if (!campground || !startDate || !endDate || !accommodationType) {
+                return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: 'Veuillez remplir tous les champs' };
             }
 
             const nights = calculateNights(startDate, endDate);
             const totalPersons = numAdults + numChildren;
 
-            if (nights === 0) {
-                return {
-                    total: 0,
-                    totalPerPerson: 0,
-                    totalPerNight: 0,
-                    breakdown,
-                    error: 'Minimum 1 nuit requis'
-                };
-            }
+            if (nights === 0) return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: 'Minimum 1 nuit requis' };
+            if (totalPersons === 0) return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: 'Minimum 1 personne requis' };
 
-            if (totalPersons === 0) {
-                return {
-                    total: 0,
-                    totalPerPerson: 0,
-                    totalPerNight: 0,
-                    breakdown,
-                    error: 'Minimum 1 personne requis'
-                };
-            }
-
-            // Vérifier accommodation type
             const accType = campground.accommodationTypes?.[accommodationType];
-            if (!accType) {
-                return {
-                    total: 0,
-                    totalPerPerson: 0,
-                    totalPerNight: 0,
-                    breakdown,
-                    error: 'Type d\'hébergement invalide'
-                };
-            }
+            if (!accType) return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: 'Type d\'hébergement invalide' };
 
-            // Vérifier minNights et maxNights
-            const minNights = Object.values(accType.pricing).reduce((min, p) => 
-                Math.min(min, p.minNights || 2), 999);
-            const maxNights = Object.values(accType.pricing).reduce((max, p) => 
-                Math.max(max, p.maxNights || 7), 0);
+            const minNights = Object.values(accType.pricing).reduce((min, p) => Math.min(min, p.minNights || 2), 999);
+            const maxNights = Object.values(accType.pricing).reduce((max, p) => Math.max(max, p.maxNights || 7), 0);
 
-            if (nights < minNights) {
-                return {
-                    total: 0,
-                    totalPerPerson: 0,
-                    totalPerNight: 0,
-                    breakdown,
-                    error: `Minimum ${minNights} nuit(s) requis`
-                };
-            }
+            if (nights < minNights) return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: `Minimum ${minNights} nuit(s) requis` };
+            if (nights > maxNights) return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: `Maximum ${maxNights} nuit(s) autorisé` };
 
-            if (nights > maxNights) {
-                return {
-                    total: 0,
-                    totalPerPerson: 0,
-                    totalPerNight: 0,
-                    breakdown,
-                    error: `Maximum ${maxNights} nuit(s) autorisé`
-                };
-            }
-
-            // Vérifier capacité max du type d'hébergement
-            if (totalPersons > accType.maxCapacity) {
-                return {
-                    total: 0,
-                    totalPerPerson: 0,
-                    totalPerNight: 0,
-                    breakdown,
-                    error: `Capacité max: ${accType.maxCapacity} personnes`
-                };
-            }
+            if (totalPersons > accType.maxCapacity) return { total: 0, totalPerPerson: 0, totalPerNight: 0, breakdown, error: `Capacité max: ${accType.maxCapacity}` };
 
             breakdown.nuits = nights;
 
-            // Calcul hébergement par nuit
             let nightlyRate = 0;
             let currentDate = new Date(startDate);
-
             while (currentDate < new Date(endDate)) {
                 const season = getSeason(currentDate.toISOString().split('T')[0]);
                 const weekend = isWeekend(currentDate.toISOString().split('T')[0]);
                 const pricing = accType.pricing[season];
-
-                let dayRate = 0;
-                if (weekend && pricing.minNights <= 3) {
-                    // Weekend rates s'appliquent surtout en basse saison (min 3 nuits)
-                    dayRate = pricing.weekend || pricing.weekday;
-                } else {
-                    dayRate = pricing.weekday;
-                }
-
+                const dayRate = weekend ? (pricing.weekend || pricing.weekday) : pricing.weekday;
                 nightlyRate += dayRate;
                 currentDate.setDate(currentDate.getDate() + 1);
             }
 
             breakdown.hebergement = nightlyRate;
 
-            // Frais d'accès
             let acces = 0;
             if (campground.accessFeeAdult !== undefined || campground.accessFeeChild !== undefined) {
-                // Nouvelle structure: tarifs par adulte/enfant
                 acces = (campground.accessFeeAdult || 0) * numAdults + (campground.accessFeeChild || 0) * numChildren;
             } else {
-                // Ancienne structure: tarif unique par personne
                 acces = (campground.accessFee || 0) * (numAdults + numChildren);
             }
             breakdown.acces = acces;
 
-            // Frais de réservation
             breakdown.reservation = campground.reservationFee || 0;
 
-            // Extras
             let extrasTotal = 0;
             extras.forEach(extra => {
-                // Si quantity > 0, inclure dans le calcul (peu importe selected)
                 if (extra.quantity > 0) {
                     const extraData = campground.extras.find(e => e.id === extra.id);
                     if (extraData) {
@@ -817,16 +690,11 @@
                     }
                 }
             });
-
             breakdown.extras = extrasTotal;
 
-            // Total avant taxes
             let subtotal = breakdown.hebergement + breakdown.acces + breakdown.reservation + breakdown.extras;
-
-            // Taxes (TPS + TVQ au Québec)
-            const taxRate = 0.15; // 5% TPS + 9.975% TVQ ≈ 15%
+            const taxRate = 0.15;
             breakdown.taxes = subtotal * taxRate;
-
             const total = subtotal + breakdown.taxes;
 
             return {
@@ -845,7 +713,6 @@
             };
         };
 
-        // ==================== DEFAULT DATA ====================
         const DEFAULT_CAMPGROUNDS = [
             {
                 id: 2,
@@ -853,11 +720,9 @@
                 region: 'Partout au Québec',
                 maxCapacity: 8,
                 dogsAllowed: false,
-                maxDogs: 0,
                 accessFeeAdult: 8.78,
                 accessFeeChild: 0,
                 reservationFee: 0,
-                types: ['Tente'],
                 accommodationTypes: {
                     'camping-ns': {
                         label: 'Camping sans service',
@@ -879,40 +744,11 @@
                 maxDogs: 2,
                 accessFee: 1.78,
                 reservationFee: 0,
-                types: ['Tente'],
                 accommodationTypes: {
-                    '1tente': {
-                        label: '1 tente',
-                        maxCapacity: 4,
-                        pricing: {
-                            basse: { weekday: 59.00, weekend: 79.00, minNights: 2, maxNights: 7 },
-                            haute: { weekday: 89.00, weekend: 89.00, minNights: 2, maxNights: 7 }
-                        }
-                    },
-                    '2tentes': {
-                        label: '2 tentes',
-                        maxCapacity: 8,
-                        pricing: {
-                            basse: { weekday: 69.00, weekend: 99.00, minNights: 2, maxNights: 7 },
-                            haute: { weekday: 109.00, weekend: 109.00, minNights: 2, maxNights: 7 }
-                        }
-                    },
-                    '3tentes': {
-                        label: '3 tentes',
-                        maxCapacity: 12,
-                        pricing: {
-                            basse: { weekday: 79.00, weekend: 119.00, minNights: 2, maxNights: 7 },
-                            haute: { weekday: 129.00, weekend: 129.00, minNights: 2, maxNights: 7 }
-                        }
-                    },
-                    '4tentes': {
-                        label: '4 tentes',
-                        maxCapacity: 16,
-                        pricing: {
-                            basse: { weekday: 89.00, weekend: 139.00, minNights: 2, maxNights: 7 },
-                            haute: { weekday: 149.00, weekend: 149.00, minNights: 2, maxNights: 7 }
-                        }
-                    }
+                    '1tente': { label: '1 tente', maxCapacity: 4, pricing: { basse: { weekday: 59.00, weekend: 79.00, minNights: 2, maxNights: 7 }, haute: { weekday: 89.00, weekend: 89.00, minNights: 2, maxNights: 7 } } },
+                    '2tentes': { label: '2 tentes', maxCapacity: 8, pricing: { basse: { weekday: 69.00, weekend: 99.00, minNights: 2, maxNights: 7 }, haute: { weekday: 109.00, weekend: 109.00, minNights: 2, maxNights: 7 } } },
+                    '3tentes': { label: '3 tentes', maxCapacity: 12, pricing: { basse: { weekday: 79.00, weekend: 119.00, minNights: 2, maxNights: 7 }, haute: { weekday: 129.00, weekend: 129.00, minNights: 2, maxNights: 7 } } },
+                    '4tentes': { label: '4 tentes', maxCapacity: 16, pricing: { basse: { weekday: 89.00, weekend: 139.00, minNights: 2, maxNights: 7 }, haute: { weekday: 149.00, weekend: 149.00, minNights: 2, maxNights: 7 } } }
                 },
                 extras: [
                     { id: 1, name: 'Canot 2 bancs', price: 43.00, billedPer: 'jour' },
@@ -927,35 +763,25 @@
             }
         ];
 
-        // ==================== MAIN APP ====================
-        function CampgroundCalculator() {
+        function App() {
             const [activeTab, setActiveTab] = useState('calculator');
             const [campgrounds, setCampgrounds] = useState(() => {
                 const saved = localStorage.getItem('campgrounds');
-                // Si localStorage a des anciennes données (Mont-Tremblant, Lac-Mégantic, etc), réinitialiser
                 if (saved) {
                     try {
                         const parsed = JSON.parse(saved);
-                        // Vérifier si c'est l'ancienne version
                         if (parsed.length > 1 || (parsed[0]?.name === 'Camping Mont-Tremblant')) {
-                            // Ancienne version, réinitialiser
                             localStorage.removeItem('campgrounds');
                             return DEFAULT_CAMPGROUNDS;
                         }
                         return parsed;
-                    } catch (e) {
+                    } catch {
                         return DEFAULT_CAMPGROUNDS;
                     }
                 }
                 return DEFAULT_CAMPGROUNDS;
             });
 
-            // Sauvegarder les campgrounds
-            useEffect(() => {
-                localStorage.setItem('campgrounds', JSON.stringify(campgrounds));
-            }, [campgrounds]);
-
-            // État du calculateur
             const [startDate, setStartDate] = useState('');
             const [endDate, setEndDate] = useState('');
             const [numAdults, setNumAdults] = useState(2);
@@ -964,764 +790,210 @@
             const [accommodationType, setAccommodationType] = useState('');
             const [extras, setExtras] = useState([]);
 
-            // Initialiser le premier campground et extras au chargement
             useEffect(() => {
                 if (campgrounds.length > 0 && !selectedCampground) {
                     const firstCampground = campgrounds[0];
                     setSelectedCampground(firstCampground);
-                    
-                    // Initialiser extras
-                    setExtras(
-                        firstCampground.extras.map(e => ({
-                            id: e.id,
-                            selected: false,
-                            quantity: 0
-                        }))
-                    );
-                    
-                    // Initialiser accommodation type
+                    setExtras(firstCampground.extras.map(e => ({ id: e.id, quantity: 0 })));
                     const firstKey = Object.keys(firstCampground.accommodationTypes || {})[0];
-                    if (firstKey) {
-                        setAccommodationType(firstKey);
-                    }
+                    if (firstKey) setAccommodationType(firstKey);
                 }
             }, []);
 
-            // Initialiser extras et accommodationType quand campground change
             useEffect(() => {
                 if (selectedCampground) {
-                    setExtras(
-                        selectedCampground.extras.map(e => ({
-                            id: e.id,
-                            selected: false,
-                            quantity: 0
-                        }))
-                    );
-                    // Initialiser avec le premier accommodation type
+                    setExtras(selectedCampground.extras.map(e => ({ id: e.id, quantity: 0 })));
                     const firstKey = Object.keys(selectedCampground.accommodationTypes || {})[0];
-                    if (firstKey) {
-                        setAccommodationType(firstKey);
-                    }
+                    if (firstKey) setAccommodationType(firstKey);
                 }
             }, [selectedCampground]);
 
-            // Calcul du coût
-            const result = calculateCost({
-                startDate,
-                endDate,
-                numAdults,
-                numChildren,
-                campground: selectedCampground,
-                accommodationType,
-                extras
-            });
+            const result = calculateCost({ startDate, endDate, numAdults, numChildren, campground: selectedCampground, accommodationType, extras });
 
-            // Gestion de l'admin
-            const [showAddModal, setShowAddModal] = useState(false);
-            const [editingCampground, setEditingCampground] = useState(null);
-
-            const handleDeleteCampground = (id) => {
-                if (confirm('Supprimer ce camping ?')) {
-                    setCampgrounds(campgrounds.filter(c => c.id !== id));
-                    if (selectedCampground?.id === id) {
-                        setSelectedCampground(null);
-                    }
-                }
-            };
-
-            const handleSaveCampground = (campground) => {
-                if (campground.id) {
-                    // Édition
-                    setCampgrounds(campgrounds.map(c => c.id === campground.id ? campground : c));
-                } else {
-                    // Ajout
-                    campground.id = Math.max(...campgrounds.map(c => c.id), 0) + 1;
-                    setCampgrounds([...campgrounds, campground]);
-                }
-                setShowAddModal(false);
-                setEditingCampground(null);
+            const handleExtraChange = (id, quantity) => {
+                setExtras(extras.map(e => e.id === id ? { ...e, quantity } : e));
             };
 
             return (
-                <div className="app-container">
+                <div className="container">
                     <div className="header">
-                        <h1>⛺ CampCalc</h1>
-                        <p>Calculateur de camping au Québec</p>
+                        <div className="header-content">
+                            <h1>⛺ CampCalc</h1>
+                            <p>Calculez le coût de votre séjour en camping</p>
+                        </div>
                     </div>
 
                     <div className="tabs">
-                        <button
-                            className={`tab-btn ${activeTab === 'calculator' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('calculator')}
-                        >
-                            Calculateur
-                        </button>
-                        <button
-                            className={`tab-btn ${activeTab === 'admin' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('admin')}
-                        >
-                            Gestion des campings
-                        </button>
+                        <button className={`tab-btn ${activeTab === 'calculator' ? 'active' : ''}`} onClick={() => setActiveTab('calculator')}>Calculateur</button>
+                        <button className={`tab-btn ${activeTab === 'admin' ? 'active' : ''}`} onClick={() => setActiveTab('admin')}>Gestion</button>
                     </div>
 
                     <div className="content">
                         {activeTab === 'calculator' && (
-                            <CalculatorTab
-                                campgrounds={campgrounds}
-                                startDate={startDate}
-                                setStartDate={setStartDate}
-                                endDate={endDate}
-                                setEndDate={setEndDate}
-                                numAdults={numAdults}
-                                setNumAdults={setNumAdults}
-                                numChildren={numChildren}
-                                setNumChildren={setNumChildren}
-                                selectedCampground={selectedCampground}
-                                setSelectedCampground={setSelectedCampground}
-                                accommodationType={accommodationType}
-                                setAccommodationType={setAccommodationType}
-                                extras={extras}
-                                setExtras={setExtras}
-                                result={result}
-                            />
-                        )}
-
-                        {activeTab === 'admin' && (
-                            <AdminTab
-                                campgrounds={campgrounds}
-                                onDelete={handleDeleteCampground}
-                                onAddNew={() => {
-                                    setEditingCampground(null);
-                                    setShowAddModal(true);
-                                }}
-                                onEdit={(camp) => {
-                                    setEditingCampground(camp);
-                                    setShowAddModal(true);
-                                }}
-                            />
-                        )}
-                    </div>
-
-                    {showAddModal && (
-                        <CampgroundModal
-                            campground={editingCampground}
-                            onSave={handleSaveCampground}
-                            onClose={() => {
-                                setShowAddModal(false);
-                                setEditingCampground(null);
-                            }}
-                        />
-                    )}
-                </div>
-            );
-        }
-
-        // ==================== TAB: CALCULATOR ====================
-        function CalculatorTab({
-            campgrounds,
-            startDate,
-            setStartDate,
-            endDate,
-            setEndDate,
-            numAdults,
-            setNumAdults,
-            numChildren,
-            setNumChildren,
-            selectedCampground,
-            setSelectedCampground,
-            accommodationType,
-            setAccommodationType,
-            extras,
-            setExtras,
-            result
-        }) {
-            const handleExtraChange = (id, field, value) => {
-                console.log(`Extra changed: id=${id}, field=${field}, value=${value}`);
-                console.log('Extras before:', extras);
-                setExtras(extras.map(e =>
-                    e.id === id ? { ...e, [field]: value } : e
-                ));
-                console.log('Extras after:', extras);
-            };
-
-            // Validation: chiens non permis
-            const dogsNotAllowed = selectedCampground && !selectedCampground.dogsAllowed;
-
-            return (
-                <div className="calculator">
-                    <div>
-                        <h2 style={{ marginBottom: '2rem', color: 'var(--pine)' }}>Paramètres du séjour</h2>
-
-                        {dogsNotAllowed && (
-                            <div className="error">
-                                ⚠️ Les chiens ne sont pas permis dans ce camping.
-                            </div>
-                        )}
-
-                        <div className="form-group">
-                            <label>Dates du séjour</label>
-                            <div className="form-row">
-                                <div>
-                                    <input
-                                        type="date"
-                                        value={startDate}
-                                        onChange={(e) => setStartDate(e.target.value)}
-                                    />
-                                    <p style={{ fontSize: '0.8rem', color: 'var(--stone)', marginTop: '0.25rem' }}>Arrivée</p>
-                                </div>
-                                <div>
-                                    <input
-                                        type="date"
-                                        value={endDate}
-                                        onChange={(e) => setEndDate(e.target.value)}
-                                    />
-                                    <p style={{ fontSize: '0.8rem', color: 'var(--stone)', marginTop: '0.25rem' }}>Départ</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Nombre de personnes</label>
-                            <div className="form-row">
-                                <div>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        value={numAdults}
-                                        onChange={(e) => setNumAdults(Math.max(0, parseInt(e.target.value) || 0))}
-                                    />
-                                    <p style={{ fontSize: '0.8rem', color: 'var(--stone)', marginTop: '0.25rem' }}>Adultes</p>
-                                </div>
-                                <div>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        value={numChildren}
-                                        onChange={(e) => setNumChildren(Math.max(0, parseInt(e.target.value) || 0))}
-                                    />
-                                    <p style={{ fontSize: '0.8rem', color: 'var(--stone)', marginTop: '0.25rem' }}>Enfants</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Type d'hébergement</label>
-                            <select
-                                value={accommodationType}
-                                onChange={(e) => setAccommodationType(e.target.value)}
-                                disabled={!selectedCampground}
-                            >
-                                <option value="">Sélectionner un camping d'abord</option>
-                                {selectedCampground && Object.entries(selectedCampground.accommodationTypes || {}).map(([key, type]) => (
-                                    <option key={key} value={key}>{type.label}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Camping</label>
-                            <div className="campground-list">
-                                {campgrounds.map(camp => (
-                                    <div
-                                        key={camp.id}
-                                        className={`campground-card ${selectedCampground?.id === camp.id ? 'selected' : ''}`}
-                                        onClick={() => {
-                                            setSelectedCampground(camp);
-                                        }}
-                                    >
-                                        <h4>{camp.name}</h4>
-                                        <p>{camp.region}</p>
-                                        <p>👥 Max: {camp.maxCapacity}</p>
-                                        <p>{camp.dogsAllowed ? '🐕 Chiens OK' : '🚫 Pas de chiens'}</p>
-                                        <p className="campground-price">
-                                            {(() => {
-                                                const prices = [];
-                                                Object.values(camp.accommodationTypes || {}).forEach(accType => {
-                                                    Object.values(accType.pricing || {}).forEach(season => {
-                                                        prices.push(season.weekday || 0);
-                                                    });
-                                                });
-                                                const min = Math.min(...prices);
-                                                const max = Math.max(...prices);
-                                                return prices.length > 0 
-                                                    ? `${formatCAD(min)} - ${formatCAD(max)} /nuit`
-                                                    : 'N/A';
-                                            })()}
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {selectedCampground && selectedCampground.extras.length > 0 && (
-                            <div className="extras-section">
-                                <label style={{ display: 'block', marginBottom: '1rem' }}>Extras optionnels</label>
-                                {selectedCampground.extras.map(extra => {
-                                    const extrasState = extras.find(e => e.id === extra.id);
-                                    return (
-                                        <div key={extra.id} style={{ padding: '1rem', background: '#f5f5f5', marginBottom: '1rem', borderRadius: '4px' }}>
-                                            <div style={{ marginBottom: '0.5rem' }}>
-                                                <strong>{extra.name}</strong>
-                                                <br />
-                                                <small style={{ color: '#666' }}>
-                                                    {formatCAD(extra.price)} par {extra.billedPer === 'jour' ? 'jour' : 'séjour'}
-                                                </small>
-                                            </div>
-                                            <div style={{ marginTop: '0.75rem' }}>
-                                                <button onClick={() => {
-                                                    console.log('MINUS clicked');
-                                                    handleExtraChange(extra.id, 'quantity', Math.max(0, (extrasState?.quantity || 0) - 1));
-                                                }}>−</button>
-                                                <span style={{ margin: '0 1rem', fontWeight: 'bold' }}>{extrasState?.quantity || 0}</span>
-                                                <button onClick={() => {
-                                                    console.log('PLUS clicked');
-                                                    handleExtraChange(extra.id, 'quantity', (extrasState?.quantity || 0) + 1);
-                                                }}>+</button>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-                    </div>
-
-                    <div>
-                        <div className="results">
-                            <h3 className="result-title">Résumé du coût</h3>
-
-                            {result.error && (
-                                <div className="error">{result.error}</div>
-                            )}
-
-                            {!result.error && result.total > 0 && (
-                                <>
-                                    <div className="price-main">{formatCAD(result.total)}</div>
-                                    <div className="price-label">Coût total du séjour</div>
-
-                                    <div className="stats-grid">
-                                        <div className="stat-card">
-                                            <div className="stat-label">Par personne</div>
-                                            <div className="stat-value">{formatCAD(result.totalPerPerson)}</div>
-                                        </div>
-                                        <div className="stat-card">
-                                            <div className="stat-label">Par nuit</div>
-                                            <div className="stat-value">{formatCAD(result.totalPerNight)}</div>
-                                        </div>
-                                        <div className="stat-card">
-                                            <div className="stat-label">Nuits</div>
-                                            <div className="stat-value">{result.breakdown.nuits}</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="breakdown">
-                                        <h4 style={{ marginBottom: '1rem', color: 'var(--pine)' }}>Détail</h4>
-
-                                        <div className="breakdown-row">
-                                            <span className="breakdown-label">Hébergement ({result.breakdown.nuits} nuits)</span>
-                                            <span className="breakdown-value">{formatCAD(result.breakdown.hebergement)}</span>
-                                        </div>
-
-                                        {result.breakdown.acces > 0 && (
-                                            <div className="breakdown-row">
-                                                <span className="breakdown-label">Droit d'accès</span>
-                                                <span className="breakdown-value">{formatCAD(result.breakdown.acces)}</span>
-                                            </div>
-                                        )}
-
-                                        {result.breakdown.reservation > 0 && (
-                                            <div className="breakdown-row">
-                                                <span className="breakdown-label">Frais de réservation</span>
-                                                <span className="breakdown-value">{formatCAD(result.breakdown.reservation)}</span>
-                                            </div>
-                                        )}
-
-                                        {result.breakdown.extras > 0 && (
-                                            <div className="breakdown-row">
-                                                <span className="breakdown-label">Extras</span>
-                                                <span className="breakdown-value">{formatCAD(result.breakdown.extras)}</span>
-                                            </div>
-                                        )}
-
-                                        <div className="breakdown-row">
-                                            <span className="breakdown-label">Taxes (TPS/TVQ)</span>
-                                            <span className="breakdown-value">{formatCAD(result.breakdown.taxes)}</span>
-                                        </div>
-
-                                        <div className="breakdown-row total">
-                                            <span>TOTAL</span>
-                                            <span>{formatCAD(result.total)}</span>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-
-                            {result.total === 0 && !result.error && (
-                                <div className="info-text">
-                                    Remplissez tous les paramètres pour voir le prix.
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // ==================== TAB: ADMIN ====================
-        function AdminTab({ campgrounds, onDelete, onAddNew, onEdit }) {
-            return (
-                <div className="admin-container">
-                    <div className="section-box">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                            <h3 className="section-title" style={{ margin: 0, borderBottom: 'none', padding: 0 }}>
-                                Campings gérés
-                            </h3>
-                            <button className="btn btn-primary" onClick={onAddNew}>
-                                + Ajouter
-                            </button>
-                        </div>
-
-                        <div>
-                            {campgrounds.map(camp => (
-                                <div key={camp.id} className="campground-item">
-                                    <div>
-                                        <h5>{camp.name}</h5>
-                                        <p>{camp.region} • Tentes</p>
-                                        <p>
-                                            {(() => {
-                                                const prices = [];
-                                                Object.values(camp.accommodationTypes || {}).forEach(accType => {
-                                                    Object.values(accType.pricing || {}).forEach(season => {
-                                                        prices.push(season.weekday || 0);
-                                                    });
-                                                });
-                                                const min = Math.min(...prices);
-                                                const max = Math.max(...prices);
-                                                return prices.length > 0 
-                                                    ? `Prix: ${formatCAD(min)} - ${formatCAD(max)}`
-                                                    : 'N/A';
-                                            })()}
-                                        </p>
-                                    </div>
-                                    <div className="btn-group">
-                                        <button
-                                            className="btn btn-secondary btn-small"
-                                            onClick={() => onEdit(camp)}
-                                            disabled={camp.name === 'Parc du Poisson Blanc' || camp.name === 'SÉPAQ - Parcs nationaux du Québec'}
-                                            title={['Parc du Poisson Blanc', 'SÉPAQ - Parcs nationaux du Québec'].includes(camp.name) ? 'Ce camping est pré-configuré' : ''}
-                                            style={['Parc du Poisson Blanc', 'SÉPAQ - Parcs nationaux du Québec'].includes(camp.name) ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
-                                        >
-                                            Éditer
-                                        </button>
-                                        <button
-                                            className="btn btn-danger btn-small"
-                                            onClick={() => onDelete(camp.id)}
-                                            disabled={camp.name === 'Parc du Poisson Blanc' || camp.name === 'SÉPAQ - Parcs nationaux du Québec'}
-                                            title={['Parc du Poisson Blanc', 'SÉPAQ - Parcs nationaux du Québec'].includes(camp.name) ? 'Ce camping ne peut pas être supprimé' : ''}
-                                            style={['Parc du Poisson Blanc', 'SÉPAQ - Parcs nationaux du Québec'].includes(camp.name) ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
-                                        >
-                                            Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="section-box">
-                        <h3 className="section-title">Statistiques</h3>
-
-                        <div className="stats-grid">
-                            <div className="stat-card">
-                                <div className="stat-label">Campings disponibles</div>
-                                <div className="stat-value">{campgrounds.length}</div>
-                            </div>
-
-                            <div className="stat-card">
-                                <div className="stat-label">Chiens permis</div>
-                                <div className="stat-value">{campgrounds.filter(c => c.dogsAllowed).length}</div>
-                            </div>
-
-                            <div className="stat-card">
-                                <div className="stat-label">Prix moyen (base)</div>
-                                <div className="stat-value">
-                                    {formatCAD(
-                                        campgrounds.reduce((sum, c) => {
-                                            const prices = [];
-                                            Object.values(c.accommodationTypes || {}).forEach(accType => {
-                                                Object.values(accType.pricing || {}).forEach(season => {
-                                                    prices.push(season.weekday || 0);
-                                                });
-                                            });
-                                            const min = Math.min(...prices);
-                                            return sum + min;
-                                        }, 0) / campgrounds.length
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="stat-card">
-                                <div className="stat-label">Régions couvertes</div>
-                                <div className="stat-value">{new Set(campgrounds.map(c => c.region)).size}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // ==================== MODAL: CAMPGROUND EDITOR ====================
-        function CampgroundModal({ campground, onSave, onClose }) {
-            const isNew = !campground;
-            const isSpecial = campground && ['Parc du Poisson Blanc', 'SÉPAQ - Parcs nationaux du Québec'].includes(campground.name);
-            
-            const [form, setForm] = useState(campground || {
-                name: '',
-                region: '',
-                maxCapacity: 4,
-                dogsAllowed: true,
-                maxDogs: 2,
-                accessFee: 5,
-                reservationFee: 0,
-                types: ['Tente'],
-                accommodationTypes: {},
-                extras: []
-            });
-
-            const handleChange = (field, value) => {
-                setForm({ ...form, [field]: value });
-            };
-
-            const handleAccommodationChange = (accKey, season, field, value) => {
-                setForm({
-                    ...form,
-                    accommodationTypes: {
-                        ...form.accommodationTypes,
-                        [accKey]: {
-                            ...form.accommodationTypes[accKey],
-                            pricing: {
-                                ...form.accommodationTypes[accKey].pricing,
-                                [season]: {
-                                    ...form.accommodationTypes[accKey].pricing[season],
-                                    [field]: field === 'minNights' || field === 'maxNights' 
-                                        ? parseInt(value) || 0 
-                                        : parseFloat(value) || 0
-                                }
-                            }
-                        }
-                    }
-                });
-            };
-
-            const handleSave = () => {
-                if (!form.name || !form.region) {
-                    alert('Nom et région requis');
-                    return;
-                }
-                onSave(form);
-            };
-
-            if (isSpecial) {
-                return (
-                    <div className="modal-overlay" onClick={onClose}>
-                        <div className="modal" onClick={(e) => e.stopPropagation()}>
-                            <h2>⚠️ Camping pré-configuré</h2>
-                            <p style={{ marginBottom: '1rem' }}>
-                                <strong>{campground.name}</strong> est un camping pré-configuré avec tarification spéciale.
-                            </p>
-                            <p style={{ marginBottom: '1rem', color: 'var(--stone)' }}>
-                                Pour modifier ce camping, vous devez editer le code source ou ajouter un nouveau camping personnalisé.
-                            </p>
-                            <div className="modal-actions">
-                                <button className="btn btn-primary" onClick={onClose}>
-                                    Fermer
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            return (
-                <div className="modal-overlay" onClick={onClose}>
-                    <div className="modal" onClick={(e) => e.stopPropagation()}>
-                        <h2>{isNew ? 'Ajouter un camping' : 'Éditer ' + form.name}</h2>
-
-                        <div className="form-group">
-                            <label>Nom du camping</label>
-                            <input
-                                type="text"
-                                value={form.name}
-                                onChange={(e) => handleChange('name', e.target.value)}
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Région</label>
-                            <input
-                                type="text"
-                                value={form.region}
-                                onChange={(e) => handleChange('region', e.target.value)}
-                                placeholder="ex: Laurentides, Gaspésie"
-                            />
-                        </div>
-
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>Capacité maximale</label>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    value={form.maxCapacity}
-                                    onChange={(e) => handleChange('maxCapacity', parseInt(e.target.value))}
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Chiens permis?</label>
-                                <select
-                                    value={form.dogsAllowed}
-                                    onChange={(e) => handleChange('dogsAllowed', e.target.value === 'true')}
-                                >
-                                    <option value="true">Oui</option>
-                                    <option value="false">Non</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {form.dogsAllowed && (
-                            <div className="form-group">
-                                <label>Nombre max de chiens</label>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    value={form.maxDogs}
-                                    onChange={(e) => handleChange('maxDogs', parseInt(e.target.value))}
-                                />
-                            </div>
-                        )}
-
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>Droit d'accès (par personne)</label>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    value={form.accessFee}
-                                    onChange={(e) => handleChange('accessFee', parseFloat(e.target.value))}
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Frais de réservation</label>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    value={form.reservationFee}
-                                    onChange={(e) => handleChange('reservationFee', parseFloat(e.target.value))}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Types d'hébergement disponibles</label>
-                            {Object.entries(form.accommodationTypes || {}).length > 0 ? (
-                                <div>
-                                    {Object.entries(form.accommodationTypes).map(([key, accType]) => (
-                                        <div key={key} style={{ marginBottom: '1rem', padding: '1rem', background: 'var(--bg)', borderRadius: '4px' }}>
-                                            <h5 style={{ color: 'var(--pine)', marginBottom: '0.5rem' }}>
-                                                {accType.label}
-                                            </h5>
-                                            <div className="form-group">
-                                                <label style={{ fontSize: '0.85rem' }}>Capacité max</label>
-                                                <input
-                                                    type="number"
-                                                    min="1"
-                                                    value={accType.maxCapacity}
-                                                    onChange={(e) => {
-                                                        setForm({
-                                                            ...form,
-                                                            accommodationTypes: {
-                                                                ...form.accommodationTypes,
-                                                                [key]: {
-                                                                    ...accType,
-                                                                    maxCapacity: parseInt(e.target.value)
-                                                                }
-                                                            }
-                                                        });
-                                                    }}
-                                                />
-                                            </div>
-                                            
-                                            {Object.entries(accType.pricing || {}).map(([season, prices]) => (
-                                                <div key={season} style={{ marginBottom: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid #ddd' }}>
-                                                    <label style={{ fontSize: '0.8rem', textTransform: 'capitalize', color: 'var(--stone)' }}>
-                                                        {season}
-                                                    </label>
-                                                    <div className="form-row" style={{ marginTop: '0.25rem' }}>
-                                                        <div>
-                                                            <small>Semaine</small>
-                                                            <input
-                                                                type="number"
-                                                                step="0.01"
-                                                                value={prices.weekday || 0}
-                                                                onChange={(e) => handleAccommodationChange(key, season, 'weekday', e.target.value)}
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <small>Weekend</small>
-                                                            <input
-                                                                type="number"
-                                                                step="0.01"
-                                                                value={prices.weekend || 0}
-                                                                onChange={(e) => handleAccommodationChange(key, season, 'weekend', e.target.value)}
-                                                            />
-                                                        </div>
+                            <div className="calculator">
+                                <div className="form-section">
+                                    <div className="form-group">
+                                        <label>Camping</label>
+                                        <div className="campground-list">
+                                            {campgrounds.map(camp => (
+                                                <div key={camp.id} className={`campground-card ${selectedCampground?.id === camp.id ? 'selected' : ''}`} onClick={() => setSelectedCampground(camp)}>
+                                                    <div>
+                                                        <h4>{camp.name}</h4>
+                                                        <p>{camp.region}</p>
                                                     </div>
-                                                    <div className="form-row" style={{ marginTop: '0.25rem' }}>
-                                                        <div>
-                                                            <small>Min nuits</small>
-                                                            <input
-                                                                type="number"
-                                                                min="1"
-                                                                value={prices.minNights || 2}
-                                                                onChange={(e) => handleAccommodationChange(key, season, 'minNights', e.target.value)}
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <small>Max nuits</small>
-                                                            <input
-                                                                type="number"
-                                                                min="1"
-                                                                value={prices.maxNights || 7}
-                                                                onChange={(e) => handleAccommodationChange(key, season, 'maxNights', e.target.value)}
-                                                            />
-                                                        </div>
-                                                    </div>
+                                                    <div className="campground-price">{camp.name.includes('SÉPAQ') ? '8.78+' : '1.78+'}</div>
                                                 </div>
                                             ))}
                                         </div>
+                                    </div>
+
+                                    {selectedCampground && (
+                                        <>
+                                            <div className="form-row">
+                                                <div className="form-group">
+                                                    <label>Arrivée</label>
+                                                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Départ</label>
+                                                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                                                </div>
+                                            </div>
+
+                                            <div className="form-row">
+                                                <div className="form-group">
+                                                    <label>Adultes</label>
+                                                    <input type="number" min="0" value={numAdults} onChange={(e) => setNumAdults(Math.max(0, parseInt(e.target.value) || 0))} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Enfants</label>
+                                                    <input type="number" min="0" value={numChildren} onChange={(e) => setNumChildren(Math.max(0, parseInt(e.target.value) || 0))} />
+                                                </div>
+                                            </div>
+
+                                            <div className="form-group">
+                                                <label>Hébergement</label>
+                                                <select value={accommodationType} onChange={(e) => setAccommodationType(e.target.value)}>
+                                                    {Object.entries(selectedCampground.accommodationTypes || {}).map(([key, type]) => (
+                                                        <option key={key} value={key}>{type.label}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            {selectedCampground.extras.length > 0 && (
+                                                <div className="form-group">
+                                                    <label>Extras</label>
+                                                    <div className="extras-list">
+                                                        {selectedCampground.extras.map(extra => {
+                                                            const extrasState = extras.find(e => e.id === extra.id) || { quantity: 0 };
+                                                            return (
+                                                                <div key={extra.id} className="extra-item">
+                                                                    <div className="extra-info">
+                                                                        <h4>{extra.name}</h4>
+                                                                        <p>{formatCAD(extra.price)} par {extra.billedPer === 'jour' ? 'jour' : 'séjour'}</p>
+                                                                    </div>
+                                                                    <div className="qty-control">
+                                                                        <button className="qty-btn" onClick={() => handleExtraChange(extra.id, Math.max(0, extrasState.quantity - 1))}>−</button>
+                                                                        <span className="qty-display">{extrasState.quantity}</span>
+                                                                        <button className="qty-btn" onClick={() => handleExtraChange(extra.id, extrasState.quantity + 1)}>+</button>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <div className="results-box">
+                                        <div className="result-label">Coût total</div>
+                                        {result.error ? (
+                                            <div className="error">{result.error}</div>
+                                        ) : result.total > 0 ? (
+                                            <>
+                                                <div className="price-display">{formatCAD(result.total)}</div>
+                                                <div className="breakdown-table">
+                                                    <div className="breakdown-row">
+                                                        <span className="breakdown-label">Hébergement ({result.breakdown.nuits} nuits)</span>
+                                                        <span className="breakdown-value">{formatCAD(result.breakdown.hebergement)}</span>
+                                                    </div>
+                                                    {result.breakdown.acces > 0 && (
+                                                        <div className="breakdown-row">
+                                                            <span className="breakdown-label">Accès</span>
+                                                            <span className="breakdown-value">{formatCAD(result.breakdown.acces)}</span>
+                                                        </div>
+                                                    )}
+                                                    {result.breakdown.extras > 0 && (
+                                                        <div className="breakdown-row">
+                                                            <span className="breakdown-label">Extras</span>
+                                                            <span className="breakdown-value">{formatCAD(result.breakdown.extras)}</span>
+                                                        </div>
+                                                    )}
+                                                    <div className="breakdown-row">
+                                                        <span className="breakdown-label">Taxes (15%)</span>
+                                                        <span className="breakdown-value">{formatCAD(result.breakdown.taxes)}</span>
+                                                    </div>
+                                                    <div className="breakdown-row total">
+                                                        <span>Total</span>
+                                                        <span className="breakdown-value">{formatCAD(result.total)}</span>
+                                                    </div>
+                                                    <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem', marginTop:'1.5rem', paddingTop:'1.5rem', borderTop:'1px solid var(--border)'}}>
+                                                        <div>
+                                                            <div style={{color:'var(--text-secondary)', fontSize:'0.85rem'}}>Par personne</div>
+                                                            <div style={{fontSize:'1.4rem', fontWeight:'700', color:'var(--accent-green)', marginTop:'0.25rem'}}>{formatCAD(result.totalPerPerson)}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div style={{color:'var(--text-secondary)', fontSize:'0.85rem'}}>Par nuit</div>
+                                                            <div style={{fontSize:'1.4rem', fontWeight:'700', color:'var(--accent-green)', marginTop:'0.25rem'}}>{formatCAD(result.totalPerNight)}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="info-text">Sélectionnez un camping, des dates et un type d'hébergement</div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'admin' && (
+                            <div className="admin-grid">
+                                <div className="card">
+                                    <h3>Campings</h3>
+                                    {campgrounds.map(camp => (
+                                        <div key={camp.id} className="campground-item">
+                                            <div>
+                                                <h4>{camp.name}</h4>
+                                                <p>{camp.region}</p>
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
-                            ) : (
-                                <p style={{ color: 'var(--stone)', fontSize: '0.9rem' }}>Aucun type d'hébergement configuré</p>
-                            )}
-                        </div>
-
-                        <div className="modal-actions">
-                            <button className="btn btn-secondary" onClick={onClose}>
-                                Annuler
-                            </button>
-                            <button className="btn btn-primary" onClick={handleSave}>
-                                {isNew ? 'Créer' : 'Sauvegarder'}
-                            </button>
-                        </div>
+                                <div className="card">
+                                    <h3>Statistiques</h3>
+                                    <div className="stats-grid">
+                                        <div className="stat-card">
+                                            <div className="label">Campings</div>
+                                            <div className="value">{campgrounds.length}</div>
+                                        </div>
+                                        <div className="stat-card">
+                                            <div className="label">Régions</div>
+                                            <div className="value">{new Set(campgrounds.map(c => c.region)).size}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             );
         }
 
-        // ==================== RENDER ====================
-        ReactDOM.createRoot(document.getElementById('root')).render(<CampgroundCalculator />);
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
