@@ -909,12 +909,44 @@
                 accessFeeChild: 0,
                 reservationFee: 0,
                 accommodationTypes: {
+                    'camping-rustique': {
+                        label: 'Camping rustique (19.80-33.20 / 22.00-41.15)',
+                        maxCapacity: 4,
+                        pricing: {
+                            basse: { weekday: 26.50, weekend: 26.50, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 31.58, weekend: 31.58, minNights: 1, maxNights: 30 }
+                        }
+                    },
                     'camping-ns': {
-                        label: 'Camping sans service',
+                        label: 'Camping sans service (27.75-46.50 / 30.80-57.60)',
                         maxCapacity: 8,
                         pricing: {
-                            basse: { weekday: 40.25, weekend: 45.10, minNights: 1, maxNights: 30 },
-                            haute: { weekday: 40.25, weekend: 45.10, minNights: 1, maxNights: 30 }
+                            basse: { weekday: 37.13, weekend: 37.13, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 44.20, weekend: 44.20, minNights: 1, maxNights: 30 }
+                        }
+                    },
+                    'camping-1service': {
+                        label: '1 service - Eau ou Élec. (29.10-53.70 / 32.35-63.65)',
+                        maxCapacity: 6,
+                        pricing: {
+                            basse: { weekday: 41.40, weekend: 41.40, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 48.00, weekend: 48.00, minNights: 1, maxNights: 30 }
+                        }
+                    },
+                    'camping-2services': {
+                        label: '2 services - Eau & Élec. (36.50-60.50 / 40.55-75.85)',
+                        maxCapacity: 6,
+                        pricing: {
+                            basse: { weekday: 48.50, weekend: 48.50, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 58.20, weekend: 58.20, minNights: 1, maxNights: 30 }
+                        }
+                    },
+                    'camping-3services': {
+                        label: '3 services - Eau, Élec. & Égout (42.00-68.75 / 46.65-87.25)',
+                        maxCapacity: 6,
+                        pricing: {
+                            basse: { weekday: 55.38, weekend: 55.38, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 66.95, weekend: 66.95, minNights: 1, maxNights: 30 }
                         }
                     }
                 },
