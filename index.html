@@ -580,6 +580,7 @@
                 numAdults,
                 numChildren,
                 campground,
+                accommodationType,
                 extras
             } = params;
 
@@ -592,7 +593,7 @@
                 taxes: 0
             };
 
-            if (!campground || !startDate || !endDate) {
+            if (!campground || !startDate || !endDate || !accommodationType) {
                 return {
                     total: 0,
                     totalPerPerson: 0,
@@ -625,6 +626,55 @@
                 };
             }
 
+            // Vérifier accommodation type
+            const accType = campground.accommodationTypes?.[accommodationType];
+            if (!accType) {
+                return {
+                    total: 0,
+                    totalPerPerson: 0,
+                    totalPerNight: 0,
+                    breakdown,
+                    error: 'Type d\'hébergement invalide'
+                };
+            }
+
+            // Vérifier minNights et maxNights
+            const minNights = Object.values(accType.pricing).reduce((min, p) => 
+                Math.min(min, p.minNights || 2), 999);
+            const maxNights = Object.values(accType.pricing).reduce((max, p) => 
+                Math.max(max, p.maxNights || 7), 0);
+
+            if (nights < minNights) {
+                return {
+                    total: 0,
+                    totalPerPerson: 0,
+                    totalPerNight: 0,
+                    breakdown,
+                    error: `Minimum ${minNights} nuit(s) requis`
+                };
+            }
+
+            if (nights > maxNights) {
+                return {
+                    total: 0,
+                    totalPerPerson: 0,
+                    totalPerNight: 0,
+                    breakdown,
+                    error: `Maximum ${maxNights} nuit(s) autorisé`
+                };
+            }
+
+            // Vérifier capacité max du type d'hébergement
+            if (totalPersons > accType.maxCapacity) {
+                return {
+                    total: 0,
+                    totalPerPerson: 0,
+                    totalPerNight: 0,
+                    breakdown,
+                    error: `Capacité max: ${accType.maxCapacity} personnes`
+                };
+            }
+
             breakdown.nuits = nights;
 
             // Calcul hébergement par nuit
@@ -634,14 +684,14 @@
             while (currentDate < new Date(endDate)) {
                 const season = getSeason(currentDate.toISOString().split('T')[0]);
                 const weekend = isWeekend(currentDate.toISOString().split('T')[0]);
+                const pricing = accType.pricing[season];
 
                 let dayRate = 0;
-
-                // Appliquer tarif selon saison et jour
-                if (weekend) {
-                    dayRate = campground.pricing[season].weekend || campground.pricing[season].base;
+                if (weekend && pricing.minNights <= 3) {
+                    // Weekend rates s'appliquent surtout en basse saison (min 3 nuits)
+                    dayRate = pricing.weekend || pricing.weekday;
                 } else {
-                    dayRate = campground.pricing[season].base;
+                    dayRate = pricing.weekday;
                 }
 
                 nightlyRate += dayRate;
@@ -662,7 +712,7 @@
                 if (extra.selected && extra.quantity > 0) {
                     const extraData = campground.extras.find(e => e.id === extra.id);
                     if (extraData) {
-                        const multiplier = extraData.billedPer === 'night' ? nights : 1;
+                        const multiplier = extraData.billedPer === 'jour' ? nights : 1;
                         extrasTotal += extraData.price * extra.quantity * multiplier;
                     }
                 }
@@ -699,85 +749,57 @@
         const DEFAULT_CAMPGROUNDS = [
             {
                 id: 1,
-                name: 'Camping Mont-Tremblant',
-                region: 'Laurentides',
-                maxCapacity: 6,
-                dogsAllowed: true,
-                maxDogs: 2,
-                accessFee: 5,
-                reservationFee: 15,
-                types: ['Tente', 'VR', 'Prêt-à-camper'],
-                pricing: {
-                    basse: { base: 35, weekend: 40 },
-                    moyenne: { base: 45, weekend: 55 },
-                    haute: { base: 55, weekend: 65 }
-                },
-                extras: [
-                    { id: 1, name: 'Bois de chauffage', price: 15, billedPer: 'séjour' },
-                    { id: 2, name: 'Chien supplémentaire', price: 10, billedPer: 'nuit' },
-                    { id: 3, name: 'Canot', price: 40, billedPer: 'jour' }
-                ]
-            },
-            {
-                id: 2,
-                name: 'Camping Lac-Mégantic',
-                region: 'Estrie',
-                maxCapacity: 8,
-                dogsAllowed: true,
-                maxDogs: 3,
-                accessFee: 4,
-                reservationFee: 20,
-                types: ['Tente', 'VR'],
-                pricing: {
-                    basse: { base: 30, weekend: 38 },
-                    moyenne: { base: 42, weekend: 50 },
-                    haute: { base: 50, weekend: 60 }
-                },
-                extras: [
-                    { id: 1, name: 'Bois de chauffage', price: 12, billedPer: 'séjour' },
-                    { id: 2, name: 'Chien supplémentaire', price: 8, billedPer: 'nuit' },
-                    { id: 4, name: 'Kayak', price: 35, billedPer: 'jour' }
-                ]
-            },
-            {
-                id: 3,
-                name: 'Camping Gaspésie Bord-Mer',
-                region: 'Gaspésie',
-                maxCapacity: 5,
-                dogsAllowed: false,
-                maxDogs: 0,
-                accessFee: 6,
-                reservationFee: 25,
-                types: ['Tente', 'Prêt-à-camper'],
-                pricing: {
-                    basse: { base: 40, weekend: 48 },
-                    moyenne: { base: 50, weekend: 60 },
-                    haute: { base: 65, weekend: 75 }
-                },
-                extras: [
-                    { id: 1, name: 'Bois de chauffage', price: 18, billedPer: 'séjour' },
-                    { id: 5, name: 'Visite guidée', price: 25, billedPer: 'séjour' }
-                ]
-            },
-            {
-                id: 4,
-                name: 'Camping Outaouais Forêt',
+                name: 'Parc du Poisson Blanc',
                 region: 'Outaouais',
-                maxCapacity: 7,
+                maxCapacity: 16,
                 dogsAllowed: true,
                 maxDogs: 2,
-                accessFee: 3,
-                reservationFee: 10,
-                types: ['Tente', 'VR', 'Prêt-à-camper'],
-                pricing: {
-                    basse: { base: 28, weekend: 35 },
-                    moyenne: { base: 40, weekend: 48 },
-                    haute: { base: 48, weekend: 58 }
+                accessFee: 1.78,
+                reservationFee: 0,
+                types: ['Tente'],
+                accommodationTypes: {
+                    '1tente': {
+                        label: '1 tente',
+                        maxCapacity: 4,
+                        pricing: {
+                            basse: { weekday: 59.00, weekend: 79.00, minNights: 2, maxNights: 7 },
+                            haute: { weekday: 89.00, weekend: 89.00, minNights: 2, maxNights: 7 }
+                        }
+                    },
+                    '2tentes': {
+                        label: '2 tentes',
+                        maxCapacity: 8,
+                        pricing: {
+                            basse: { weekday: 69.00, weekend: 99.00, minNights: 2, maxNights: 7 },
+                            haute: { weekday: 109.00, weekend: 109.00, minNights: 2, maxNights: 7 }
+                        }
+                    },
+                    '3tentes': {
+                        label: '3 tentes',
+                        maxCapacity: 12,
+                        pricing: {
+                            basse: { weekday: 79.00, weekend: 119.00, minNights: 2, maxNights: 7 },
+                            haute: { weekday: 129.00, weekend: 129.00, minNights: 2, maxNights: 7 }
+                        }
+                    },
+                    '4tentes': {
+                        label: '4 tentes',
+                        maxCapacity: 16,
+                        pricing: {
+                            basse: { weekday: 89.00, weekend: 139.00, minNights: 2, maxNights: 7 },
+                            haute: { weekday: 149.00, weekend: 149.00, minNights: 2, maxNights: 7 }
+                        }
+                    }
                 },
                 extras: [
-                    { id: 1, name: 'Bois de chauffage', price: 14, billedPer: 'séjour' },
-                    { id: 2, name: 'Chien supplémentaire', price: 9, billedPer: 'nuit' },
-                    { id: 6, name: 'BBQ', price: 20, billedPer: 'séjour' }
+                    { id: 1, name: 'Canot 2 bancs', price: 43.00, billedPer: 'jour' },
+                    { id: 2, name: 'Abitibi & Co - Canot 2 bancs', price: 51.00, billedPer: 'jour' },
+                    { id: 3, name: 'Canot 3 bancs', price: 51.00, billedPer: 'jour' },
+                    { id: 4, name: 'Canot 4 bancs', price: 61.00, billedPer: 'jour' },
+                    { id: 5, name: 'Kayak de mer solo', price: 38.00, billedPer: 'jour' },
+                    { id: 6, name: 'Surf à pagaie', price: 33.00, billedPer: 'jour' },
+                    { id: 7, name: 'Surf à pagaie - Touring', price: 38.00, billedPer: 'jour' },
+                    { id: 8, name: 'Surf à pagaie enfants', price: 22.00, billedPer: 'jour' }
                 ]
             }
         ];
@@ -804,7 +826,7 @@
             const [accommodationType, setAccommodationType] = useState('Tente');
             const [extras, setExtras] = useState([]);
 
-            // Initialiser extras quand campground change
+            // Initialiser extras et accommodationType quand campground change
             useEffect(() => {
                 if (selectedCampground) {
                     setExtras(
@@ -814,6 +836,11 @@
                             quantity: 0
                         }))
                     );
+                    // Initialiser avec le premier accommodation type
+                    const firstKey = Object.keys(selectedCampground.accommodationTypes || {})[0];
+                    if (firstKey) {
+                        setAccommodationType(firstKey);
+                    }
                 }
             }, [selectedCampground]);
 
@@ -824,6 +851,7 @@
                 numAdults,
                 numChildren,
                 campground: selectedCampground,
+                accommodationType,
                 extras
             });
 
@@ -1020,8 +1048,8 @@
                                 disabled={!selectedCampground}
                             >
                                 <option value="">Sélectionner un camping d'abord</option>
-                                {selectedCampground?.types.map(type => (
-                                    <option key={type} value={type}>{type}</option>
+                                {selectedCampground && Object.entries(selectedCampground.accommodationTypes || {}).map(([key, type]) => (
+                                    <option key={key} value={key}>{type.label}</option>
                                 ))}
                             </select>
                         </div>
@@ -1035,7 +1063,6 @@
                                         className={`campground-card ${selectedCampground?.id === camp.id ? 'selected' : ''}`}
                                         onClick={() => {
                                             setSelectedCampground(camp);
-                                            setAccommodationType(camp.types[0]);
                                         }}
                                     >
                                         <h4>{camp.name}</h4>
@@ -1043,7 +1070,19 @@
                                         <p>👥 Max: {camp.maxCapacity}</p>
                                         <p>{camp.dogsAllowed ? '🐕 Chiens OK' : '🚫 Pas de chiens'}</p>
                                         <p className="campground-price">
-                                            À partir de {formatCAD(Math.min(...Object.values(camp.pricing).map(s => s.base)))}
+                                            {(() => {
+                                                const prices = [];
+                                                Object.values(camp.accommodationTypes || {}).forEach(accType => {
+                                                    Object.values(accType.pricing || {}).forEach(season => {
+                                                        prices.push(season.weekday || 0);
+                                                    });
+                                                });
+                                                const min = Math.min(...prices);
+                                                const max = Math.max(...prices);
+                                                return prices.length > 0 
+                                                    ? `${formatCAD(min)} - ${formatCAD(max)} /nuit`
+                                                    : 'N/A';
+                                            })()}
                                         </p>
                                     </div>
                                 ))}
@@ -1067,7 +1106,7 @@
                                                     <strong>{extra.name}</strong>
                                                     <br />
                                                     <small style={{ color: 'var(--stone)' }}>
-                                                        {formatCAD(extra.price)} par {extra.billedPer === 'night' ? 'nuit' : 'séjour'}
+                                                        {formatCAD(extra.price)} par {extra.billedPer === 'jour' ? 'jour' : 'séjour'}
                                                     </small>
                                                 </span>
                                             </label>
@@ -1188,8 +1227,22 @@
                                 <div key={camp.id} className="campground-item">
                                     <div>
                                         <h5>{camp.name}</h5>
-                                        <p>{camp.region} • {camp.types.join(', ')}</p>
-                                        <p>Prix: {formatCAD(Math.min(...Object.values(camp.pricing).map(s => s.base)))} - {formatCAD(Math.max(...Object.values(camp.pricing).map(s => s.weekend)))}</p>
+                                        <p>{camp.region} • Tentes</p>
+                                        <p>
+                                            {(() => {
+                                                const prices = [];
+                                                Object.values(camp.accommodationTypes || {}).forEach(accType => {
+                                                    Object.values(accType.pricing || {}).forEach(season => {
+                                                        prices.push(season.weekday || 0);
+                                                    });
+                                                });
+                                                const min = Math.min(...prices);
+                                                const max = Math.max(...prices);
+                                                return prices.length > 0 
+                                                    ? `Prix: ${formatCAD(min)} - ${formatCAD(max)}`
+                                                    : 'N/A';
+                                            })()}
+                                        </p>
                                     </div>
                                     <div className="btn-group">
                                         <button
@@ -1228,7 +1281,16 @@
                                 <div className="stat-label">Prix moyen (base)</div>
                                 <div className="stat-value">
                                     {formatCAD(
-                                        campgrounds.reduce((sum, c) => sum + Math.min(...Object.values(c.pricing).map(s => s.base)), 0) / campgrounds.length
+                                        campgrounds.reduce((sum, c) => {
+                                            const prices = [];
+                                            Object.values(c.accommodationTypes || {}).forEach(accType => {
+                                                Object.values(accType.pricing || {}).forEach(season => {
+                                                    prices.push(season.weekday || 0);
+                                                });
+                                            });
+                                            const min = Math.min(...prices);
+                                            return sum + min;
+                                        }, 0) / campgrounds.length
                                     )}
                                 </div>
                             </div>
