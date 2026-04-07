@@ -2,187 +2,154 @@
   "campgrounds": [
     {
       "id": 1,
-      "name": "Camping Mont-Tremblant",
-      "region": "Laurentides",
-      "maxCapacity": 6,
+      "name": "Parc du Poisson Blanc",
+      "region": "Outaouais",
+      "maxCapacity": 16,
       "dogsAllowed": true,
       "maxDogs": 2,
-      "accessFee": 5,
-      "reservationFee": 15,
-      "types": ["Tente", "VR", "Prêt-à-camper"],
-      "pricing": {
-        "basse": {
-          "base": 35,
-          "weekend": 40
+      "accessFee": 1.78,
+      "reservationFee": 0,
+      "types": ["Tente"],
+      "accommodationTypes": {
+        "1tente": {
+          "label": "1 tente",
+          "maxCapacity": 4,
+          "pricing": {
+            "basse": {
+              "weekday": 59.00,
+              "weekend": 79.00,
+              "minNights": 2,
+              "maxNights": 7
+            },
+            "haute": {
+              "weekday": 89.00,
+              "weekend": 89.00,
+              "minNights": 2,
+              "maxNights": 7
+            }
+          }
         },
-        "moyenne": {
-          "base": 45,
-          "weekend": 55
+        "2tentes": {
+          "label": "2 tentes",
+          "maxCapacity": 8,
+          "pricing": {
+            "basse": {
+              "weekday": 69.00,
+              "weekend": 99.00,
+              "minNights": 2,
+              "maxNights": 7
+            },
+            "haute": {
+              "weekday": 109.00,
+              "weekend": 109.00,
+              "minNights": 2,
+              "maxNights": 7
+            }
+          }
         },
-        "haute": {
-          "base": 55,
-          "weekend": 65
+        "3tentes": {
+          "label": "3 tentes",
+          "maxCapacity": 12,
+          "pricing": {
+            "basse": {
+              "weekday": 79.00,
+              "weekend": 119.00,
+              "minNights": 2,
+              "maxNights": 7
+            },
+            "haute": {
+              "weekday": 129.00,
+              "weekend": 129.00,
+              "minNights": 2,
+              "maxNights": 7
+            }
+          }
+        },
+        "4tentes": {
+          "label": "4 tentes",
+          "maxCapacity": 16,
+          "pricing": {
+            "basse": {
+              "weekday": 89.00,
+              "weekend": 139.00,
+              "minNights": 2,
+              "maxNights": 7
+            },
+            "haute": {
+              "weekday": 149.00,
+              "weekend": 149.00,
+              "minNights": 2,
+              "maxNights": 7
+            }
+          }
         }
       },
       "extras": [
         {
           "id": 1,
-          "name": "Bois de chauffage",
-          "price": 15,
-          "billedPer": "séjour"
+          "name": "Canot 2 bancs",
+          "price": 43.00,
+          "billedPer": "jour"
         },
         {
           "id": 2,
-          "name": "Chien supplémentaire",
-          "price": 10,
-          "billedPer": "nuit"
+          "name": "Abitibi & Co - Canot 2 bancs",
+          "price": 51.00,
+          "billedPer": "jour"
         },
         {
           "id": 3,
-          "name": "Canot",
-          "price": 40,
+          "name": "Canot 3 bancs",
+          "price": 51.00,
           "billedPer": "jour"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "name": "Camping Lac-Mégantic",
-      "region": "Estrie",
-      "maxCapacity": 8,
-      "dogsAllowed": true,
-      "maxDogs": 3,
-      "accessFee": 4,
-      "reservationFee": 20,
-      "types": ["Tente", "VR"],
-      "pricing": {
-        "basse": {
-          "base": 30,
-          "weekend": 38
-        },
-        "moyenne": {
-          "base": 42,
-          "weekend": 50
-        },
-        "haute": {
-          "base": 50,
-          "weekend": 60
-        }
-      },
-      "extras": [
-        {
-          "id": 1,
-          "name": "Bois de chauffage",
-          "price": 12,
-          "billedPer": "séjour"
-        },
-        {
-          "id": 2,
-          "name": "Chien supplémentaire",
-          "price": 8,
-          "billedPer": "nuit"
         },
         {
           "id": 4,
-          "name": "Kayak",
-          "price": 35,
+          "name": "Canot 4 bancs",
+          "price": 61.00,
           "billedPer": "jour"
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "name": "Camping Gaspésie Bord-Mer",
-      "region": "Gaspésie",
-      "maxCapacity": 5,
-      "dogsAllowed": false,
-      "maxDogs": 0,
-      "accessFee": 6,
-      "reservationFee": 25,
-      "types": ["Tente", "Prêt-à-camper"],
-      "pricing": {
-        "basse": {
-          "base": 40,
-          "weekend": 48
-        },
-        "moyenne": {
-          "base": 50,
-          "weekend": 60
-        },
-        "haute": {
-          "base": 65,
-          "weekend": 75
-        }
-      },
-      "extras": [
-        {
-          "id": 1,
-          "name": "Bois de chauffage",
-          "price": 18,
-          "billedPer": "séjour"
         },
         {
           "id": 5,
-          "name": "Visite guidée",
-          "price": 25,
-          "billedPer": "séjour"
-        }
-      ]
-    },
-    {
-      "id": 4,
-      "name": "Camping Outaouais Forêt",
-      "region": "Outaouais",
-      "maxCapacity": 7,
-      "dogsAllowed": true,
-      "maxDogs": 2,
-      "accessFee": 3,
-      "reservationFee": 10,
-      "types": ["Tente", "VR", "Prêt-à-camper"],
-      "pricing": {
-        "basse": {
-          "base": 28,
-          "weekend": 35
-        },
-        "moyenne": {
-          "base": 40,
-          "weekend": 48
-        },
-        "haute": {
-          "base": 48,
-          "weekend": 58
-        }
-      },
-      "extras": [
-        {
-          "id": 1,
-          "name": "Bois de chauffage",
-          "price": 14,
-          "billedPer": "séjour"
-        },
-        {
-          "id": 2,
-          "name": "Chien supplémentaire",
-          "price": 9,
-          "billedPer": "nuit"
+          "name": "Kayak de mer solo",
+          "price": 38.00,
+          "billedPer": "jour"
         },
         {
           "id": 6,
-          "name": "BBQ",
-          "price": 20,
-          "billedPer": "séjour"
+          "name": "Surf à pagaie",
+          "price": 33.00,
+          "billedPer": "jour"
+        },
+        {
+          "id": 7,
+          "name": "Surf à pagaie - Touring",
+          "price": 38.00,
+          "billedPer": "jour"
+        },
+        {
+          "id": 8,
+          "name": "Surf à pagaie enfants",
+          "price": 22.00,
+          "billedPer": "jour"
         }
       ]
     }
   ],
   "metadata": {
-    "version": "1.0",
+    "version": "2.0",
     "lastUpdated": "2026-04-06",
-    "regions": ["Laurentides", "Estrie", "Gaspésie", "Outaouais"],
+    "park": "Parc du Poisson Blanc",
+    "region": "Outaouais",
     "seasonDates": {
       "basse": "Jan-Avr, Sept-Nov",
-      "moyenne": "Décembre",
       "haute": "Juin-Août"
+    },
+    "notes": {
+      "minNights": "2 nuits en semaine haute saison, 3 nuits fin de semaine basse saison",
+      "maxNights": "7 nuits max par réservation",
+      "conservationFee": 1.78,
+      "year": 2026
     },
     "taxRate": {
       "TPS": 0.05,

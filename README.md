@@ -53,30 +53,48 @@
 ```javascript
 {
   id: 1,
-  name: "Camping Mont-Tremblant",
-  region: "Laurentides",
-  maxCapacity: 6,
+  name: "Parc du Poisson Blanc",
+  region: "Outaouais",
+  maxCapacity: 16,
   dogsAllowed: true,
   maxDogs: 2,
   
   // Frais fixes
-  accessFee: 5,              // Par personne
-  reservationFee: 15,        // Fixe
+  accessFee: 1.78,        // Par personne (frais conservation)
+  reservationFee: 0,      // Fixe
   
-  types: ["Tente", "VR", "Prêt-à-camper"],
+  types: ["Tente"],
   
-  // Tarification par saison
-  pricing: {
-    basse: { base: 35, weekend: 40 },
-    moyenne: { base: 45, weekend: 55 },
-    haute: { base: 55, weekend: 65 }
+  // ✨ NOUVEAU: Tarification par type d'hébergement
+  accommodationTypes: {
+    "1tente": {
+      label: "1 tente",
+      maxCapacity: 4,
+      pricing: {
+        basse: { 
+          weekday: 59.00,     // En semaine
+          weekend: 79.00,     // Fin de semaine
+          minNights: 2,       // Minimum de nuits
+          maxNights: 7        // Maximum de nuits
+        },
+        haute: { 
+          weekday: 89.00, 
+          weekend: 89.00, 
+          minNights: 2, 
+          maxNights: 7 
+        }
+      }
+    },
+    "2tentes": { /* ... */ },
+    "3tentes": { /* ... */ },
+    "4tentes": { /* ... */ }
   },
   
   // Extras optionnels
   extras: [
-    { id: 1, name: "Bois", price: 15, billedPer: "séjour" },
-    { id: 2, name: "Chien +", price: 10, billedPer: "nuit" },
-    { id: 3, name: "Canot", price: 40, billedPer: "jour" }
+    { id: 1, name: "Canot 2 bancs", price: 43.00, billedPer: "jour" },
+    { id: 5, name: "Kayak de mer solo", price: 38.00, billedPer: "jour" },
+    // ...
   ]
 }
 ```
@@ -86,20 +104,31 @@
 ```
 1. Nuits = ceil((dateDepart - dateArrivee) / 86400)
 
-2. Tarif par nuit:
-   - Saison = "haute" si juin-août, "moyenne" si déc-jan, "basse" sinon
+2. Validation minNights/maxNights:
+   - accType = accommodationTypes[selectedType]
+   - Si nuits < accType.pricing[season].minNights → ERREUR
+   - Si nuits > accType.pricing[season].maxNights → ERREUR
+
+3. Tarif par nuit:
+   - Saison = "haute" si juin-août, "basse" sinon
    - Jour = weekend si vendredi/samedi
-   - Prix = pricing[saison].weekend (si weekend) OU pricing[saison].base
-
-3. Sous-total:
-   - Hébergement = Σ(tarif par nuit)
-   - Accès = accessFee × numPersonnes
-   - Réservation = reservationFee (fixe)
-   - Extras = Σ(prix × quantité × multiplier)
+   - Prix = accType.pricing[saison].weekend (si weekend)
+           OU accType.pricing[saison].weekday
    
-4. Taxes = Sous-total × 0.15  (TPS 5% + TVQ ~10%)
+   Note: minNights/maxNights varient par saison et type
+   - Exemple: 2 tentes basse saison = min 2 nuits en semaine, min 3 nuits fin de semaine
 
-5. TOTAL = Sous-total + Taxes
+4. Sous-total:
+   - Hébergement = Σ(tarif par nuit pour chaque jour)
+   - Accès = accessFee × numPersonnes
+   - Réservation = reservationFee (fixe, souvent 0)
+   - Extras = Σ(prix × quantité × multiplier)
+     * multiplier = nuits si billedPer="jour"
+     * multiplier = 1 si billedPer="séjour"
+   
+5. Taxes = Sous-total × 0.15  (TPS 5% + TVQ ~10%)
+
+6. TOTAL = Sous-total + Taxes
 ```
 
 ### Détection saisons (personnalisable)
@@ -118,23 +147,40 @@
 
 ```javascript
 {
-  id: 5,
-  name: "Votre Camping",
-  region: "Région",
-  maxCapacity: 6,
+  id: 1,
+  name: "Parc du Poisson Blanc",
+  region: "Outaouais",
+  maxCapacity: 16,
   dogsAllowed: true,
   maxDogs: 2,
-  accessFee: 5,
-  reservationFee: 20,
-  types: ["Tente", "VR"],
-  pricing: {
-    basse: { base: 30, weekend: 38 },
-    moyenne: { base: 42, weekend: 50 },
-    haute: { base: 52, weekend: 62 }
+  accessFee: 1.78,
+  reservationFee: 0,
+  types: ["Tente"],
+  
+  // Tarification par type d'hébergement
+  accommodationTypes: {
+    "1tente": {
+      label: "1 tente",
+      maxCapacity: 4,
+      pricing: {
+        basse: { weekday: 59, weekend: 79, minNights: 2, maxNights: 7 },
+        haute: { weekday: 89, weekend: 89, minNights: 2, maxNights: 7 }
+      }
+    },
+    "2tentes": {
+      label: "2 tentes",
+      maxCapacity: 8,
+      pricing: {
+        basse: { weekday: 69, weekend: 99, minNights: 2, maxNights: 7 },
+        haute: { weekday: 109, weekend: 109, minNights: 2, maxNights: 7 }
+      }
+    }
+    // Ajouter autant de types que nécessaire
   },
+  
   extras: [
-    { id: 1, name: "Bois", price: 14, billedPer: "séjour" },
-    { id: 2, name: "Chien +", price: 9, billedPer: "nuit" }
+    { id: 1, name: "Canot 2 bancs", price: 43.00, billedPer: "jour" },
+    { id: 5, name: "Kayak de mer solo", price: 38.00, billedPer: "jour" }
   ]
 }
 ```
@@ -251,40 +297,61 @@ python -m http.server 8000
 
 ## 📊 Exemples de scénarios
 
-### Scénario 1 : Famille weekend
-- 2 adultes + 1 enfant
-- 27-28 août (haute saison, fin de semaine)
-- Camping Mont-Tremblant, Tente
-- 1 bois de chauffage
+### Scénario 1 : Weekend en basse saison (2 tentes)
+- 6 personnes (2 adultes + 4 enfants)
+- 27-29 septembre (3 nuits, samedi-lundi = weekend)
+- Parc du Poisson Blanc, 2 tentes
+- 1 canot 2 bancs (3 jours)
 
 **Résultat** :
 ```
-Hébergement: 65 × 1 = 65$
-Accès: 5 × 3 = 15$
-Réservation: 15$
-Bois: 15$
-Sous-total: 110$
-Taxes (15%): 16.50$
-TOTAL: 126.50$
-Par personne: 42.17$
+2 tentes fin de semaine basse saison: 99 × 3 = 297$
+Accès (frais conservation): 1.78 × 6 = 10.68$
+Réservation: 0$
+Canot (3 jours): 43 × 3 = 129$
+Sous-total: 436.68$
+Taxes (15%): 65.50$
+TOTAL: 502.18$
+Par personne: 83.70$
+Par nuit: 167.39$
 ```
 
-### Scénario 2 : Semaine basse saison
-- 4 adultes
-- 15-20 avril (basse saison)
-- Camping Lac-Mégantic, VR
-- 2 chiens supplémentaires
+### Scénario 2 : Semaine en basse saison (1 tente)
+- 3 personnes
+- 15-19 avril (4 nuits, lun-ven = semaine)
+- Parc du Poisson Blanc, 1 tente
+- 1 kayak de mer solo (4 jours)
 
 **Résultat** :
 ```
-Hébergement: 30 × 5 = 150$
-Accès: 4 × 4 = 16$
-Réservation: 20$
-Chiens (5 nuits × 2): 8 × 10 = 80$
-Sous-total: 266$
-Taxes: 39.90$
-TOTAL: 305.90$
-Par personne: 76.48$
+1 tente en semaine basse saison: 59 × 4 = 236$
+Accès: 1.78 × 3 = 5.34$
+Réservation: 0$
+Kayak (4 jours): 38 × 4 = 152$
+Sous-total: 393.34$
+Taxes (15%): 59.00$
+TOTAL: 452.34$
+Par personne: 150.78$
+Par nuit: 113.09$
+```
+
+### Scénario 3 : Haute saison (4 tentes)
+- 12 personnes
+- 20-23 juillet (3 nuits, mer-sam = mélange semaine/weekend)
+- Parc du Poisson Blanc, 4 tentes
+- 2 canots 2 bancs (3 jours)
+
+**Résultat** :
+```
+4 tentes haute saison: 149 × 3 = 447$
+Accès: 1.78 × 12 = 21.36$
+Réservation: 0$
+Canots (2 × 43 × 3): 258$
+Sous-total: 726.36$
+Taxes (15%): 108.95$
+TOTAL: 835.31$
+Par personne: 69.61$
+Par nuit: 278.44$
 ```
 
 ---
