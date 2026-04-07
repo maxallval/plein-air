@@ -1020,7 +1020,32 @@
                 ]
             },
             {
-                id: 1,
+                id: 4,
+                name: 'Mont des Morios',
+                region: 'Lanaudière',
+                favicon: '',
+                maxCapacity: 20,
+                dogsAllowed: true,
+                maxDogs: 2,
+                accessFeeAdult: 10.00,
+                accessFeeChild: 0,
+                reservationFee: 0,
+                accommodationTypes: {
+                    'camping-sauvage-sommet': {
+                        label: 'Camping sauvage - Sommet (Contribution demandée 5-10$)',
+                        maxCapacity: 20,
+                        pricing: {
+                            basse: { weekday: 5.00, weekend: 5.00, minNights: 1, maxNights: 7 },
+                            haute: { weekday: 10.00, weekend: 10.00, minNights: 1, maxNights: 7 }
+                        }
+                    }
+                },
+                extras: [
+                    { id: 201, name: 'Droit de circulation (ZEC des Martres)', price: 14.25, billedPer: 'séjour' },
+                    { id: 202, name: 'Carte topographique', price: 0.00, billedPer: 'séjour' }
+                ]
+            },
+            {
                 name: 'Parc du Poisson Blanc',
                 region: 'Outaouais',
                 favicon: 'https://poissonblanc.ca/img/favicon/pb-favicon-32x32.png',
