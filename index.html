@@ -953,7 +953,73 @@
                 extras: []
             },
             {
-                id: 1,
+                id: 3,
+                name: 'Parc régional Montagne du Diable',
+                region: 'Laurentides',
+                favicon: '',
+                maxCapacity: 6,
+                dogsAllowed: false,
+                accessFeeAdult: 7.83,
+                accessFeeChild: 0,
+                reservationFee: 0,
+                accommodationTypes: {
+                    'camping-rustique-reg': {
+                        label: 'Camping rustique - Emplacement régulier',
+                        maxCapacity: 4,
+                        pricing: {
+                            basse: { weekday: 45.00, weekend: 45.00, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 45.00, weekend: 45.00, minNights: 1, maxNights: 30 }
+                        }
+                    },
+                    'camping-rustique-plate': {
+                        label: 'Camping rustique - Plate-forme',
+                        maxCapacity: 4,
+                        pricing: {
+                            basse: { weekday: 40.00, weekend: 40.00, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 40.00, weekend: 40.00, minNights: 1, maxNights: 30 }
+                        }
+                    },
+                    'camping-2services-md': {
+                        label: 'Camping 2 services - Eau et Électricité',
+                        maxCapacity: 6,
+                        pricing: {
+                            basse: { weekday: 55.00, weekend: 55.00, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 55.00, weekend: 55.00, minNights: 1, maxNights: 30 }
+                        }
+                    },
+                    'prets-a-camper-sem': {
+                        label: 'Prêt-à-camper - Semaine',
+                        maxCapacity: 4,
+                        pricing: {
+                            basse: { weekday: 90.00, weekend: 90.00, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 90.00, weekend: 90.00, minNights: 1, maxNights: 30 }
+                        }
+                    },
+                    'prets-a-camper-we': {
+                        label: 'Prêt-à-camper - Fin de semaine',
+                        maxCapacity: 4,
+                        pricing: {
+                            basse: { weekday: 110.00, weekend: 110.00, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 110.00, weekend: 110.00, minNights: 1, maxNights: 30 }
+                        }
+                    },
+                    'stationnement-vr': {
+                        label: 'Stationnement VR (P2 ou P3)',
+                        maxCapacity: 8,
+                        pricing: {
+                            basse: { weekday: 40.00, weekend: 40.00, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 40.00, weekend: 40.00, minNights: 1, maxNights: 30 }
+                        }
+                    }
+                },
+                extras: [
+                    { id: 101, name: 'Tente additionnelle', price: 20.00, billedPer: 'jour' },
+                    { id: 102, name: 'Location canot', price: 0.00, billedPer: 'séjour' },
+                    { id: 103, name: 'Location kayak', price: 0.00, billedPer: 'séjour' },
+                    { id: 104, name: 'Location vélo de montagne', price: 0.00, billedPer: 'séjour' }
+                ]
+            },
+            {
                 name: 'Parc du Poisson Blanc',
                 region: 'Outaouais',
                 favicon: 'https://poissonblanc.ca/img/favicon/pb-favicon-32x32.png',
