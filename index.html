@@ -710,7 +710,15 @@
             breakdown.hebergement = nightlyRate;
 
             // Frais d'accès
-            breakdown.acces = (campground.accessFee || 0) * totalPersons;
+            let acces = 0;
+            if (campground.accessFeeAdult !== undefined || campground.accessFeeChild !== undefined) {
+                // Nouvelle structure: tarifs par adulte/enfant
+                acces = (campground.accessFeeAdult || 0) * numAdults + (campground.accessFeeChild || 0) * numChildren;
+            } else {
+                // Ancienne structure: tarif unique par personne
+                acces = (campground.accessFee || 0) * (numAdults + numChildren);
+            }
+            breakdown.acces = acces;
 
             // Frais de réservation
             breakdown.reservation = campground.reservationFee || 0;
@@ -757,6 +765,29 @@
 
         // ==================== DEFAULT DATA ====================
         const DEFAULT_CAMPGROUNDS = [
+            {
+                id: 2,
+                name: 'SÉPAQ - Parcs nationaux du Québec',
+                region: 'Partout au Québec',
+                maxCapacity: 8,
+                dogsAllowed: false,
+                maxDogs: 0,
+                accessFeeAdult: 8.78,
+                accessFeeChild: 0,
+                reservationFee: 0,
+                types: ['Tente'],
+                accommodationTypes: {
+                    'camping-ns': {
+                        label: 'Camping sans service',
+                        maxCapacity: 8,
+                        pricing: {
+                            basse: { weekday: 40.25, weekend: 45.10, minNights: 1, maxNights: 30 },
+                            haute: { weekday: 40.25, weekend: 45.10, minNights: 1, maxNights: 30 }
+                        }
+                    }
+                },
+                extras: []
+            },
             {
                 id: 1,
                 name: 'Parc du Poisson Blanc',
@@ -1293,18 +1324,18 @@
                                         <button
                                             className="btn btn-secondary btn-small"
                                             onClick={() => onEdit(camp)}
-                                            disabled={camp.name === 'Parc du Poisson Blanc'}
-                                            title={camp.name === 'Parc du Poisson Blanc' ? 'Ce camping est pré-configuré' : ''}
-                                            style={camp.name === 'Parc du Poisson Blanc' ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                                            disabled={camp.name === 'Parc du Poisson Blanc' || camp.name === 'SÉPAQ - Parcs nationaux du Québec'}
+                                            title={['Parc du Poisson Blanc', 'SÉPAQ - Parcs nationaux du Québec'].includes(camp.name) ? 'Ce camping est pré-configuré' : ''}
+                                            style={['Parc du Poisson Blanc', 'SÉPAQ - Parcs nationaux du Québec'].includes(camp.name) ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                                         >
                                             Éditer
                                         </button>
                                         <button
                                             className="btn btn-danger btn-small"
                                             onClick={() => onDelete(camp.id)}
-                                            disabled={camp.name === 'Parc du Poisson Blanc'}
-                                            title={camp.name === 'Parc du Poisson Blanc' ? 'Ce camping ne peut pas être supprimé' : ''}
-                                            style={camp.name === 'Parc du Poisson Blanc' ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                                            disabled={camp.name === 'Parc du Poisson Blanc' || camp.name === 'SÉPAQ - Parcs nationaux du Québec'}
+                                            title={['Parc du Poisson Blanc', 'SÉPAQ - Parcs nationaux du Québec'].includes(camp.name) ? 'Ce camping ne peut pas être supprimé' : ''}
+                                            style={['Parc du Poisson Blanc', 'SÉPAQ - Parcs nationaux du Québec'].includes(camp.name) ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                                         >
                                             Supprimer
                                         </button>
@@ -1359,7 +1390,7 @@
         // ==================== MODAL: CAMPGROUND EDITOR ====================
         function CampgroundModal({ campground, onSave, onClose }) {
             const isNew = !campground;
-            const isSpecial = campground?.name === 'Parc du Poisson Blanc';
+            const isSpecial = campground && ['Parc du Poisson Blanc', 'SÉPAQ - Parcs nationaux du Québec'].includes(campground.name);
             
             const [form, setForm] = useState(campground || {
                 name: '',
@@ -1413,7 +1444,7 @@
                         <div className="modal" onClick={(e) => e.stopPropagation()}>
                             <h2>⚠️ Camping pré-configuré</h2>
                             <p style={{ marginBottom: '1rem' }}>
-                                Le <strong>Parc du Poisson Blanc</strong> est un camping pré-configuré avec tarification spéciale par type d'hébergement.
+                                <strong>{campground.name}</strong> est un camping pré-configuré avec tarification spéciale.
                             </p>
                             <p style={{ marginBottom: '1rem', color: 'var(--stone)' }}>
                                 Pour modifier ce camping, vous devez editer le code source ou ajouter un nouveau camping personnalisé.
