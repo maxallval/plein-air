@@ -1,6 +1,29 @@
 {
   "campgrounds": [
     {
+      "id": 2,
+      "name": "SÉPAQ - Parcs nationaux du Québec",
+      "region": "Partout au Québec",
+      "maxCapacity": 8,
+      "dogsAllowed": false,
+      "maxDogs": 0,
+      "accessFeeAdult": 8.78,
+      "accessFeeChild": 0,
+      "reservationFee": 0,
+      "types": ["Tente"],
+      "accommodationTypes": {
+        "camping-ns": {
+          "label": "Camping sans service",
+          "maxCapacity": 8,
+          "pricing": {
+            "basse": { weekday: 40.25, weekend: 45.10, minNights: 1, maxNights: 30 },
+            "haute": { weekday: 40.25, weekend: 45.10, minNights: 1, maxNights: 30 }
+          }
+        }
+      },
+      "extras": []
+    },
+    {
       "id": 1,
       "name": "Parc du Poisson Blanc",
       "region": "Outaouais",
