@@ -141,10 +141,10 @@
         const { useState, useEffect } = React;
 
         const CAMPGROUNDS = [
-            { id: 4, name: 'Mont des Morios', region: 'Lanaudière', favicon: '', accessFeeAdult: 10.00, accommodationTypes: { 'sauvage': { label: 'Camping sauvage', capacity: 20, pricing: { basse: 0.00, haute: 0.00 } } }, extras: [{ id: 201, name: 'Contribution basse', price: 5.00, billedPer: 'séjour' }, { id: 202, name: 'Contribution haute', price: 10.00, billedPer: 'séjour' }, { id: 203, name: 'Droit circulation ZEC', price: 14.25, billedPer: 'séjour' }] },
-            { id: 3, name: 'Parc Montagne du Diable', region: 'Laurentides', favicon: 'https://cdn.shortpixel.ai/spai2/w_32+q_lossy+ret_img+to_webp/www.parcmontagnedudiable.com/wp-content/uploads/2016/05/parc-regional-montagne2.png', accessFeeAdult: 7.83, accommodationTypes: { 'rustique-reg': { label: 'Rustique régulier', capacity: 4, pricing: { basse: 45.00, haute: 45.00 } }, 'rustique-plate': { label: 'Rustique plate-forme', capacity: 4, pricing: { basse: 40.00, haute: 40.00 } }, '2-services': { label: '2 services', capacity: 6, pricing: { basse: 55.00, haute: 55.00 } } }, extras: [{ id: 101, name: 'Tente additionnelle', price: 20.00, billedPer: 'jour' }, { id: 102, name: 'Location canot', price: 0.00, billedPer: 'séjour' }] },
-            { id: 2, name: 'SÉPAQ', region: 'Partout au Québec', favicon: 'https://www.google.com/s2/favicons?sz=32&domain_url=https%3A%2F%2Fwww.sepaq.com', accessFeeAdult: 8.78, accommodationTypes: { 'rustique': { label: 'Rustique', capacity: 4, pricing: { basse: 26.50, haute: 31.58 } }, 'sans-service': { label: 'Sans service', capacity: 8, pricing: { basse: 37.13, haute: 44.20 } }, '1-service': { label: '1 service', capacity: 6, pricing: { basse: 41.40, haute: 48.00 } }, '2-services': { label: '2 services', capacity: 6, pricing: { basse: 48.50, haute: 58.20 } } }, extras: [] },
-            { id: 1, name: 'Parc du Poisson Blanc', region: 'Outaouais', favicon: 'https://poissonblanc.ca/img/favicon/pb-favicon-32x32.png', accessFee: 0, accommodationTypes: { '1-ile': { label: '1 tente (4 pers)', capacity: 4, pricing: { basse: 59, haute: 89 }, weekend: { basse: 79, haute: 89 } }, '2-ile': { label: '2 tentes (8 pers)', capacity: 8, pricing: { basse: 69, haute: 109 }, weekend: { basse: 99, haute: 109 } } }, extras: [{ id: 1, name: 'Canot 16\'', price: 43.00, billedPer: 'jour' }, { id: 2, name: 'Kayak solo', price: 38.00, billedPer: 'jour' }] }
+            { id: 3, name: 'Parc régional Montagne du Diable', region: 'Ferme-Neuve', favicon: 'https://cdn.shortpixel.ai/spai2/w_32+q_lossy+ret_img+to_webp/www.parcmontagnedudiable.com/wp-content/uploads/2016/05/parc-regional-montagne2.png', accessFeeAdult: 10.00, accommodationTypes: { 'rustique': { label: 'Camping rustique', capacity: 4, pricing: { basse: 55.00, haute: 55.00 } }, 'prets': { label: 'Prêt-à-camper', capacity: 4, pricing: { basse: 160.00, haute: 225.00 } } }, extras: [{ id: 301, name: 'Chien', price: 5.00, billedPer: 'jour' }] },
+            { id: 4, name: 'Mont Morios', region: 'Charlevoix', favicon: '', accessFeeAdult: 12.50, accommodationTypes: { 'sauvage': { label: 'Camping sauvage', capacity: 20, pricing: { basse: 30.00, haute: 35.00 } } }, extras: [{ id: 401, name: 'Stationnement véhicule', price: 10.00, billedPer: 'jour' }] },
+            { id: 2, name: 'SÉPAQ', region: 'Parcs nationaux du Québec', favicon: 'https://www.google.com/s2/favicons?sz=32&domain_url=https%3A%2F%2Fwww.sepaq.com', accessFeeAdult: 9.85, accommodationTypes: { 'sans-service': { label: 'Camping sans service', capacity: 8, pricing: { basse: 35.75, haute: 35.75 } }, '2-services': { label: 'Camping 2 services', capacity: 6, pricing: { basse: 45.00, haute: 55.00 } }, '3-services': { label: 'Camping 3 services', capacity: 6, pricing: { basse: 55.00, haute: 65.00 } }, 'canot': { label: 'Canot-camping', capacity: 4, pricing: { basse: 34.40, haute: 34.40 } }, 'prets': { label: 'Prêt-à-camper', capacity: 4, pricing: { basse: 115.00, haute: 200.00 } } }, extras: [] },
+            { id: 1, name: 'Parc régional du Poisson Blanc', region: 'Notre-Dame-du-Laus', favicon: 'https://poissonblanc.ca/img/favicon/pb-favicon-32x32.png', accessFee: 0, accommodationTypes: { '1-tente': { label: '1 tente (1 espace)', capacity: 4, pricing: { basse: 59.00, haute: 89.00 }, weekend: { basse: 59.00, haute: 89.00 } }, '2-tentes': { label: '2 tentes (2 espaces)', capacity: 8, pricing: { basse: 69.00, haute: 109.00 }, weekend: { basse: 69.00, haute: 109.00 } }, '3-tentes': { label: '3 tentes (3 espaces)', capacity: 12, pricing: { basse: 79.00, haute: 129.00 }, weekend: { basse: 79.00, haute: 129.00 } } }, extras: [{ id: 101, name: 'Location canot', price: 57.50, billedPer: 'jour' }, { id: 102, name: 'Livraison bois', price: 17.50, billedPer: 'séjour' }, { id: 103, name: 'Stationnement supplémentaire', price: 10.00, billedPer: 'jour' }] }
         ];
 
         const formatCAD = (v) => new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(v);
@@ -327,17 +327,9 @@
             };
 
             useEffect(() => {
+                // Logique simplifiée - pas de modifications auto
                 if (selectedCampground?.id === 4 && startDate && endDate) {
-                    let basse = 0, haute = 0;
-                    let d = new Date(startDate);
-                    while (d < new Date(endDate)) {
-                        const season = getSeason(d.toISOString().split('T')[0]);
-                        if (season === 'basse') basse++; else haute++;
-                        d.setDate(d.getDate() + 1);
-                    }
-                    const newExtras = extras.filter(e => e.id !== 201 && e.id !== 202);
-                    newExtras.push({ id: haute >= basse ? 202 : 201, quantity: 1 });
-                    setExtras(newExtras);
+                    // Mont Morios n'a plus d'extras auto, juste afficher les stationnements
                 }
             }, [selectedCampground?.id, startDate, endDate]);
 
